@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import {AppCommand} from "./app.command";
 
-@Module({})
+@Module({
+    providers: [AppCommand]
+})
 export class AppModule {}
