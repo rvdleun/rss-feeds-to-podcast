@@ -1,3 +1,4 @@
+maxAgeHours: 24
 feeds:
   - src: "https://feeds.feedburner.com/TechCrunch"
     title: "TechCrunch"

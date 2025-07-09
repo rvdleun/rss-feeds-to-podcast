@@ -3,6 +3,8 @@ import { RssConfig, RssFeed, RssFeedSchema } from '../config/schemas';
 import * as Parser from 'rss-parser';
 import { OutputService } from '../output/output.service';
 import slugify from 'slugify';
+import { subHours, isAfter, parseISO } from 'date-fns';
+import { Item } from 'rss-parser';
 
 console.log(Parser);
 
@@ -13,15 +15,20 @@ export class RssFeedService {
 
   constructor(private outputService: OutputService) {}
 
-  async storeItems({ src, title }: RssFeed) {
+  async storeItems({ src, title }: RssFeed, maxAgeHours?: number) {
     this.#logger.log(`Fetching RSS Feed from ${src}`);
 
     const feed = await this.#parser.parseURL(src);
-
     const key = slugify(feed.title, { lower: true, strict: true });
+    const { items } = feed;
+
+    const filteredItems = maxAgeHours
+      ? this.#filterItemsWithMaxAgeHours(items, maxAgeHours)
+      : items;
+
     const data = {
       title: title ?? feed.title,
-      items: feed.items.map((item) => ({
+      items: filteredItems.map((item) => ({
         src: item.link,
         title: item.title,
       })),
@@ -33,5 +40,18 @@ export class RssFeedService {
       `rss-feeds/${key}.json`,
       JSON.stringify(data, null, 2),
     );
+  }
+
+  #filterItemsWithMaxAgeHours(items: Item[], maxAgeHours: number) {
+    const cutoffTime = subHours(new Date(), maxAgeHours);
+
+    return items.filter((item) => {
+      if (!item.pubDate) {
+        return false;
+      }
+
+      const itemDate = new Date(item.pubDate);
+      return isAfter(itemDate, cutoffTime);
+    });
   }
 }
