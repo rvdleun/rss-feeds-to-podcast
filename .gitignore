@@ -402,3 +402,6 @@ dist
 # Generated files
 lancedb
 public
+
+# Config files (use .config.example as template)
+.config/

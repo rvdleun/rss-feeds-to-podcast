@@ -1,69 +1,78 @@
-
 import { Command, CommandRunner, Option } from 'nest-commander';
-import {Logger} from "@nestjs/common";
+import { Logger } from '@nestjs/common';
+import { AppConfigService } from './config/config.service';
 
 interface BasicCommandOptions {
-    string?: string;
-    boolean?: boolean;
-    number?: number;
+  string?: string;
+  boolean?: boolean;
+  number?: number;
 }
 
-@Command({ name: 'basic', description: 'A parameter parse', options: { isDefault: true } })
+@Command({
+  name: 'basic',
+  description: 'A parameter parse',
+  options: { isDefault: true },
+})
 export class AppCommand extends CommandRunner {
-    #logger: Logger = new Logger(this.constructor.name);
+  #logger: Logger = new Logger(this.constructor.name);
 
-    async run(
-        passedParam: string[],
-        options?: BasicCommandOptions,
-    ): Promise<void> {
-        if (options?.boolean !== undefined && options?.boolean !== null) {
-            this.runWithBoolean(passedParam, options.boolean);
-        } else if (options?.number) {
-            this.runWithNumber(passedParam, options.number);
-        } else if (options?.string) {
-            this.runWithString(passedParam, options.string);
-        } else {
-            this.runWithNone(passedParam);
-        }
-    }
+  constructor(private configService: AppConfigService) {
+    super();
+  }
 
-    @Option({
-        flags: '-n, --number [number]',
-        description: 'A basic number parser',
-    })
-    parseNumber(val: string): number {
-        return Number(val);
+  async run(
+    passedParam: string[],
+    options?: BasicCommandOptions,
+  ): Promise<void> {
+    if (options?.boolean !== undefined && options?.boolean !== null) {
+      this.runWithBoolean(passedParam, options.boolean);
+    } else if (options?.number) {
+      this.runWithNumber(passedParam, options.number);
+    } else if (options?.string) {
+      this.runWithString(passedParam, options.string);
+    } else {
+      this.runWithNone(passedParam);
     }
+  }
 
-    @Option({
-        flags: '-s, --string [string]',
-        description: 'A string return',
-    })
-    parseString(val: string): string {
-        return val;
-    }
+  @Option({
+    flags: '-n, --number [number]',
+    description: 'A basic number parser',
+  })
+  parseNumber(val: string): number {
+    return Number(val);
+  }
 
-    @Option({
-        flags: '-b, --boolean [boolean]',
-        description: 'A boolean parser',
-    })
-    parseBoolean(val: string): boolean {
-        return JSON.parse(val);
-    }
+  @Option({
+    flags: '-s, --string [string]',
+    description: 'A string return',
+  })
+  parseString(val: string): string {
+    return val;
+  }
 
-    runWithString(param: string[], option: string): void {
-        this.#logger.log({ param, string: option });
-    }
+  @Option({
+    flags: '-b, --boolean [boolean]',
+    description: 'A boolean parser',
+  })
+  parseBoolean(val: string): boolean {
+    return JSON.parse(val);
+  }
 
-    runWithNumber(param: string[], option: number): void {
-        this.#logger.log({ param, number: option });
-    }
+  runWithString(param: string[], option: string): void {
+    this.#logger.log({ param, string: option });
+  }
 
-    runWithBoolean(param: string[], option: boolean): void {
-        this.#logger.log({ param, boolean: option });
-    }
+  runWithNumber(param: string[], option: number): void {
+    this.#logger.log({ param, number: option });
+  }
 
-    runWithNone(param: string[]): void {
-        this.#logger.log({ param });
-    }
+  runWithBoolean(param: string[], option: boolean): void {
+    this.#logger.log({ param, boolean: option });
+  }
+
+  runWithNone(param: string[]): void {
+    this.#logger.log({ param });
+    console.log(this.configService.getConfig('rss'));
+  }
 }
