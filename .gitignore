@@ -403,5 +403,6 @@ dist
 lancedb
 public
 
-# Config files (use .config.example as template)
+# Blueprint-related files
 .config/
+/output/

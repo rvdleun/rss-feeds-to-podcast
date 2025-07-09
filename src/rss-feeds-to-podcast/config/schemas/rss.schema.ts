@@ -10,3 +10,4 @@ export const RssConfigSchema = z.object({
 });
 
 export type RssConfig = z.infer<typeof RssConfigSchema>;
+export type RssFeed = z.infer<typeof RssFeedSchema>;

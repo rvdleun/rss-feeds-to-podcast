@@ -9,7 +9,7 @@ export class AppConfigService {
 
   constructor(private configService: ConfigService<AppConfig>) {}
 
-  getConfig(key: AppConfigKey): AppConfig {
+  getConfig<K extends AppConfigKey>(key: K): AppConfig[K] {
     return this.configService.get<AppConfig>('config', { infer: true })[key];
   }
 }

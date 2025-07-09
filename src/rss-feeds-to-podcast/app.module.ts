@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppCommand } from "./app.command";
 import { AppConfigModule } from './config/config.module';
+import { RssFeedModule } from './rss-feed/rss-feed.module';
 
 @Module({
-    imports: [AppConfigModule],
-    providers: [AppCommand]
+  imports: [AppConfigModule, RssFeedModule],
 })
 export class AppModule {}
