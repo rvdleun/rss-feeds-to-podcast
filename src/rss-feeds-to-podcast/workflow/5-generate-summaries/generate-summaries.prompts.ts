@@ -1,5 +1,21 @@
 import { Segment } from 'src/rss-feeds-to-podcast/types/segment';
 
+export const generateBriefPrompt = (segment: Segment) => `
+Create a one-line sentence that introduces this topic to podcast listeners.
+
+## Requirements:
+- Should work as a natural podcast transition or intro
+- Focus on the most discussion-worthy aspect
+- Avoid technical jargon or complex terms
+- Make listeners want to hear more about the topic
+- Sound conversational and engaging when spoken
+
+## Summary to base it on:
+${segment.summary ?? segment.content}
+
+Return only the one-line sentence - nothing else.
+`;
+
 export const generateSummaryPrompt = (segment: Segment) => `
 # Instruction  
 You are a news editor whose job is to summarize an article for the hosts. The text that I will send you is part of the newscast.
