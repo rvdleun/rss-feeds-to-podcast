@@ -24,6 +24,7 @@
     "date-fns": "^4.1.0",
     "js-yaml": "^4.1.0",
     "nest-commander": "^3.17.0",
+    "openai": "^5.9.0",
     "reflect-metadata": "^0.2.2",
     "rss-parser": "^3.13.0",
     "rxjs": "^7.8.1",

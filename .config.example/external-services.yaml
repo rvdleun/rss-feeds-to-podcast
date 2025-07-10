@@ -1,3 +1,9 @@
+llm:
+  apiKey: 'ollama'
+  service: 'ollama'
+  baseURL: 'http://localhost:11434/v1'
+  model: 'llama3.1:8b'
+
 scrapper:
   cache: false
   href: "http://localhost:2400"
