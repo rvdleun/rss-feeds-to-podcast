@@ -4,5 +4,6 @@ export interface Segment {
   content?: string;
   item: RssFeedItem;
   origin: string;
+  siteName?: string;
   summary?: string;
 }

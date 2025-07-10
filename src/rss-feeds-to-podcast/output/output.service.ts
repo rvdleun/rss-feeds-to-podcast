@@ -18,11 +18,12 @@ export class OutputService {
   #logger = new Logger(this.constructor.name);
 
   clearDirectory(path: OutputDirectory) {
-    if (!existsSync(path)) {
+    const fullPath = join(this.#getOutputDirectory(), path);
+    if (!existsSync(fullPath)) {
       return;
     }
 
-    unlinkSync(path);
+    unlinkSync(fullPath);
   }
 
   generateFile(
@@ -33,17 +34,14 @@ export class OutputService {
     const fullPath = join(this.#getOutputDirectory(), directory, filePath);
     const directoryPath = dirname(fullPath);
 
-    // Ensure all directories in the path exist
     if (!existsSync(directoryPath)) {
       mkdirSync(directoryPath, { recursive: true });
     }
 
-    // Check if file exists and delete it
     if (existsSync(fullPath)) {
       unlinkSync(fullPath);
     }
 
-    // Generate new file with content
     writeFileSync(fullPath, content);
   }
 

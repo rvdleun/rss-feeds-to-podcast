@@ -19,6 +19,11 @@ export class SegmentPickerService {
     const rssFeeds =
       this.outputService.getDataFromDirectory<RssFeedData>('rss-feeds');
 
+    if (rssFeeds.length === 0) {
+      this.#logger.warn('No RSS Feeds found. Run "retrieve-rss-feeds" first');
+      return;
+    }
+
     let segmentsLeft =
       this.appConfigService.getConfig('podcast').numberOfSegments;
     let segments: Segment[] = [];

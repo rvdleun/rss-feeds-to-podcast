@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { RssConfigSchema } from './schemas';
 import { Logger } from '@nestjs/common';
 import { PodcastSchema } from './schemas/podcast.schema';
+import { ExternalServicesSchema } from './schemas/external-services.schema';
 
 const logger = new Logger('ConfigLoader');
 
@@ -65,10 +66,15 @@ export function loadYamlConfigFile<T>(
  * @returns Object containing all configuration sections
  */
 export const loadConfig = () => {
+  const externalServices = loadYamlConfigFile(
+    'external-services',
+    ExternalServicesSchema,
+  );
   const podcast = loadYamlConfigFile('podcast', PodcastSchema);
   const rss = loadYamlConfigFile('rss', RssConfigSchema);
 
   return {
+    externalServices,
     podcast,
     rss,
   };

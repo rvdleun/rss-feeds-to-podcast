@@ -1,6 +1,7 @@
 export interface RssFeedItem {
   content: string;
   id: string;
+  src: string;
   title: string;
 }
 

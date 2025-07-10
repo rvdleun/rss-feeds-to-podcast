@@ -1,8 +1,7 @@
 maxAgeHours: 24
 feeds:
-  - src: "https://feeds.feedburner.com/TechCrunch"
-    title: "TechCrunch"
-  - src: "https://www.wired.com/feed/rss"
-    title: "Wired"
-  - src: "https://feeds.arstechnica.com/arstechnica/index"
-    title: "Ars Technica"
+  - src: "https://blog.mozilla.ai/rss/"
+  - src: "https://blog.mozilla.org/en/feed/"
+  - src: "https://hnrss.org/frontpage"
+    title: "Hacker News"
+  - src: "https://www.roadtovr.com/feed/"

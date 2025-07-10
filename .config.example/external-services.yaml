@@ -1,0 +1,6 @@
+scrapper:
+  cache: false
+  href: "http://localhost:2400"
+  incognito: true
+  timeout: 10000
+  waitUntil: networkidle
