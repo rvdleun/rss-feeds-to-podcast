@@ -3,6 +3,8 @@ import { OutputService } from '../../modules/output/output.service';
 import { RssFeedData } from '../../types/rss-feed.types';
 import { AppConfigService } from '../../modules/config/config.service';
 import { Segment } from '../../types/segment';
+import { randomBytes } from 'crypto';
+import { DIVIDER } from '../../utils/console';
 
 @Injectable()
 export class SegmentPickerService {
@@ -52,7 +54,7 @@ export class SegmentPickerService {
       }
 
       const segment = {
-        fileName: `${segmentsLeft}.json`,
+        id: randomBytes(3).toString('hex'),
         item,
         origin: feed.title,
       };
@@ -60,6 +62,8 @@ export class SegmentPickerService {
 
       this.outputService.saveSegment(segment);
       segmentsLeft--;
+
+      this.#logger.log(DIVIDER);
     }
 
     this.#logger.log('Segments picked.');

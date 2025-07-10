@@ -4,6 +4,8 @@ import { OutputService } from '../../modules/output/output.service';
 import { Segment } from '../../types/segment';
 import { evaluateArticlePrompt } from './filter-segments.prompts';
 import { z } from 'zod';
+import { generateSegmentDescription } from '../../utils/segment';
+import { DIVIDER } from '../../utils/console';
 
 @Injectable()
 export class FilterSegmentsService {
@@ -23,14 +25,14 @@ export class FilterSegmentsService {
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
 
-      this.#logger.log(`Examining segment ${i + 1} - ${segment.item.title}`);
+      this.#logger.log(
+        `Examining segment ${generateSegmentDescription(segment)}`,
+      );
 
       const { content } = segment;
 
       if (!content) {
-        this.#logger.warn(
-          `Segment ${i + 1} has no content. Removing this segment.`,
-        );
+        this.#logger.warn(`Segment has no content. Removing this segment.`);
         this.outputService.removeSegment(segment);
         continue;
       }
@@ -42,11 +44,11 @@ export class FilterSegmentsService {
 
       if (!evaluation) {
         this.#logger.warn(
-          `Segment ${i + 1} has been evaluated to not be suitable for a podcast. Removing this segment.`,
+          `Segment has been evaluated to not be suitable for a podcast. Removing this segment.`,
         );
         this.outputService.removeSegment(segment);
-        continue;
       }
+      this.#logger.log(DIVIDER);
     }
 
     this.#logger.log('Segments filtered.');

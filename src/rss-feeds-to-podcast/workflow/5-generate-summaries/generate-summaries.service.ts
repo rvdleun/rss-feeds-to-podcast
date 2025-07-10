@@ -3,6 +3,8 @@ import { LlmService } from '../../modules/llm/llm.service';
 import { OutputService } from '../../modules/output/output.service';
 import { Segment } from '../../types/segment';
 import { generateSummaryPrompt } from './generate-summaries.prompts';
+import { generateSegmentDescription } from '../../utils/segment';
+import { DIVIDER } from '../../utils/console';
 
 @Injectable()
 export class GenerateSummariesService {
@@ -29,23 +31,28 @@ export class GenerateSummariesService {
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
 
+      this.#logger.log(
+        `Generating summary for segment ${generateSegmentDescription(segment)}`,
+      );
+
       if (!segment.content) {
-        this.#logger.warn(`Segment ${i + 1} has no content`);
+        this.#logger.warn(`Segment has no content`);
         continue;
       }
 
       if (segment.summary) {
-        this.#logger.warn(`Segment ${i + 1} already has a summary`);
+        this.#logger.warn(`Segment already has a summary`);
         continue;
       }
 
       const summary = await this.llmService.generateText(
         generateSummaryPrompt(segment),
       );
-      this.#logger.log(`Summary for segment ${i + 1} generated`);
+      this.#logger.log(`Summary generated`);
 
       segment.summary = summary;
       this.outputService.saveSegment(segment);
+      this.#logger.log(DIVIDER);
     }
 
     this.#logger.log('Summaries generated.');

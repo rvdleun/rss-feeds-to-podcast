@@ -2,7 +2,7 @@ import { RssFeedItem } from './rss-feed.types';
 
 export interface Segment {
   content?: string;
-  fileName: string;
+  id: string;
   item: RssFeedItem;
   origin: string;
   siteName?: string;

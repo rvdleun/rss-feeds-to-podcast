@@ -4,6 +4,8 @@ import { AppConfigService } from '../../modules/config/config.service';
 import { ScrapperArticle, ScrapperPing } from './content-scraper.types';
 import { Segment } from '../../types/segment';
 import { ExternalServicesConfig } from '../../modules/config/schemas/external-services.schema';
+import { generateSegmentDescription } from '../../utils/segment';
+import { DIVIDER } from '../../utils/console';
 
 @Injectable()
 export class ContentScraperService implements OnModuleInit {
@@ -44,14 +46,16 @@ export class ContentScraperService implements OnModuleInit {
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
 
+      this.#logger.log(
+        `Scraping content for segment ${generateSegmentDescription(segment)}`,
+      );
+
       if (segment.content) {
-        this.#logger.warn(`Segment ${i + 1} already has content.`);
+        this.#logger.warn(`Segment already has content.`);
         continue;
       }
 
-      this.#logger.log(
-        `Scraping content from segment ${i + 1}: ${segment.origin} - ${segment.item.title}`,
-      );
+      this.#logger.log(`Scraping content...`);
 
       const { cache, incognito, timeout, waitUntil } = this.#scrapperConfig;
 
@@ -82,7 +86,10 @@ export class ContentScraperService implements OnModuleInit {
       segment.siteName = siteName;
 
       this.outputService.saveSegment(segment);
+      this.#logger.log(DIVIDER);
     }
+
+    this.#logger.log('Content scraped.');
   }
 
   async #makeScrapperRequest<T>(endpoint: string): Promise<T> {

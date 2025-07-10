@@ -76,7 +76,7 @@ export class OutputService {
     const fullPath = join(
       this.#getOutputDirectory(),
       'segments',
-      segment.fileName,
+      `${segment.id}.json`,
     );
     unlinkSync(fullPath);
   }
@@ -84,7 +84,7 @@ export class OutputService {
   saveSegment(segment: Segment) {
     this.generateFile(
       'segments',
-      segment.fileName,
+      `${segment.id}.json`,
       JSON.stringify(segment, null, 2),
     );
   }
