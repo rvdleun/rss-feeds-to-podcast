@@ -1,6 +1,6 @@
 import { Command, CommandRunner } from 'nest-commander';
 import { SegmentPickerService } from './segment-picker.service';
-import { OutputService } from '../output/output.service';
+import { OutputService } from '../../modules/output/output.service';
 
 @Command({
   name: 'create-segments',

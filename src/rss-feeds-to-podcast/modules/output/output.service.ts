@@ -9,7 +9,7 @@ import {
   readFileSync,
   statSync,
 } from 'fs';
-import { OutputDirectory } from '../types/output';
+import { OutputDirectory } from '../../types/output';
 
 const outputPath = join(process.cwd(), 'output');
 

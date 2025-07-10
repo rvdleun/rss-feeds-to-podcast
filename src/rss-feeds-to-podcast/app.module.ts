@@ -1,15 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppConfigModule } from './config/config.module';
-import { RssFeedModule } from './rss-feed/rss-feed.module';
-import { SegmentPickerModule } from './segment-picker/segment-picker.module';
-import { ContentScraperModule } from './content-scraper/content-scraper.module';
+import { AppConfigModule } from './modules/config/config.module';
+import { RssFeedModule } from './commands/rss-feed/rss-feed.module';
+import { SegmentPickerModule } from './commands/segment-picker/segment-picker.module';
+import { ContentScraperModule } from './commands/content-scraper/content-scraper.module';
 
 @Module({
-  imports: [
-    AppConfigModule,
-    ContentScraperModule,
-    RssFeedModule,
-    SegmentPickerModule,
-  ],
+  imports: [RssFeedModule, SegmentPickerModule, ContentScraperModule],
 })
 export class AppModule {}

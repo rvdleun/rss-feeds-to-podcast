@@ -1,9 +1,9 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { OutputService } from '../output/output.service';
-import { AppConfigService } from '../config/config.service';
+import { OutputService } from '../../modules/output/output.service';
+import { AppConfigService } from '../../modules/config/config.service';
 import { ScrapperArticle, ScrapperPing } from './content-scraper.types';
-import { Segment } from '../types/segment';
-import { ExternalServicesConfig } from '../config/schemas/external-services.schema';
+import { Segment } from '../../types/segment';
+import { ExternalServicesConfig } from '../../modules/config/schemas/external-services.schema';
 
 @Injectable()
 export class ContentScraperService implements OnModuleInit {

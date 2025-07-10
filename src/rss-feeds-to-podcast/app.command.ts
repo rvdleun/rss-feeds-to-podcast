@@ -1,6 +1,6 @@
 import { Command, CommandRunner, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { AppConfigService } from './config/config.service';
+import { AppConfigService } from './modules/config/config.service';
 
 interface BasicCommandOptions {
   string?: string;

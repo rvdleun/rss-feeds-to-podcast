@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OutputService } from '../output/output.service';
-import { RssFeedData } from '../types/rss-feed.types';
-import { AppConfigService } from '../config/config.service';
-import { Segment } from '../types/segment';
+import { OutputService } from '../../modules/output/output.service';
+import { RssFeedData } from '../../types/rss-feed.types';
+import { AppConfigService } from '../../modules/config/config.service';
+import { Segment } from '../../types/segment';
 
 @Injectable()
 export class SegmentPickerService {

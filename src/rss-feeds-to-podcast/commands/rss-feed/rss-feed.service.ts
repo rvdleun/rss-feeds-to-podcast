@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RssFeed } from '../config/schemas';
+import { RssFeed } from '../../modules/config/schemas';
 import * as Parser from 'rss-parser';
-import { OutputService } from '../output/output.service';
+import { OutputService } from '../../modules/output/output.service';
 import slugify from 'slugify';
 import { subHours, isAfter } from 'date-fns';
 import { Item } from 'rss-parser';
-import { AppConfigService } from '../config/config.service';
+import { AppConfigService } from '../../modules/config/config.service';
 
 @Injectable()
 export class RssFeedService {

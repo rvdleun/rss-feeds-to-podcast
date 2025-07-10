@@ -1,5 +1,5 @@
 import { Command, CommandRunner } from 'nest-commander';
-import { OutputService } from '../output/output.service';
+import { OutputService } from '../../modules/output/output.service';
 import { ContentScraperService } from './content-scraper.service';
 
 @Command({
