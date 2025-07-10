@@ -6,6 +6,7 @@ import { evaluateArticlePrompt } from './filter-segments.prompts';
 import { z } from 'zod';
 import { generateSegmentDescription } from '../../utils/segment';
 import { DIVIDER } from '../../utils/console';
+import { EvaluateArticleResponseFormat } from './filter-segments.types';
 
 @Injectable()
 export class FilterSegmentsService {
@@ -37,17 +38,23 @@ export class FilterSegmentsService {
         continue;
       }
 
-      const evaluation = await this.llmService.generateText<boolean>(
-        evaluateArticlePrompt(segment),
-        z.boolean(),
-      );
+      const { reason, suitable } =
+        await this.llmService.generateText<EvaluateArticleResponseFormat>(
+          evaluateArticlePrompt(segment),
+          z.object({
+            reason: z.string(),
+            suitable: z.boolean(),
+          }),
+        );
 
-      if (!evaluation) {
+      if (!suitable) {
         this.#logger.warn(
-          `Segment has been evaluated to not be suitable for a podcast. Removing this segment.`,
+          `Segment has been evaluated to not be suitable for a podcast. Reason: "${reason}". Removing segment.`,
         );
         this.outputService.removeSegment(segment);
       }
+
+      this.#logger.log(`Segment is approved. Reason: ${reason}`);
       this.#logger.log(DIVIDER);
     }
 

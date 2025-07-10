@@ -23,5 +23,5 @@ A good podcast article should have:
 ## Article to evaluate:
 ${content}
 
-Return only "TRUE" or "FALSE". Do not include any other text, explanations, or formatting.
+Return only this JSON format: {"suitable": true/false, "reason": "brief explanation"}
 `;
