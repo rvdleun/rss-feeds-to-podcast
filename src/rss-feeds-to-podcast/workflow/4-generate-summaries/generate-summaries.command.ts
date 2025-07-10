@@ -11,11 +11,6 @@ export class GenerateSummariesCommand extends CommandRunner {
   }
 
   async run(): Promise<void> {
-    try {
-      const text = await this.generateSummariesService.generateSummaries();
-      console.log('This is the result', text);
-    } catch (error) {
-      console.error(error);
-    }
+    await this.generateSummariesService.generateSummaries();
   }
 }
