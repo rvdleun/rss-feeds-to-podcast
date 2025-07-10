@@ -1,9 +1,10 @@
 export interface RssFeedItem {
   content: string;
+  id: string;
   title: string;
 }
 
 export interface RssFeedData {
-  title: string;
   items: RssFeedItem[];
+  title: string;
 }

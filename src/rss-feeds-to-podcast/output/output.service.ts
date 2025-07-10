@@ -1,21 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { join, dirname } from 'path';
-import { mkdirSync, existsSync, writeFileSync, unlinkSync } from 'fs';
+import {
+  mkdirSync,
+  existsSync,
+  writeFileSync,
+  unlinkSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+} from 'fs';
+import { OutputDirectory } from '../types/output';
 
 const outputPath = join(process.cwd(), 'output');
 
 @Injectable()
 export class OutputService {
-  getOutputDirectory(): string {
-    if (!existsSync(outputPath)) {
-      mkdirSync(outputPath);
+  #logger = new Logger(this.constructor.name);
+
+  clearDirectory(path: OutputDirectory) {
+    if (!existsSync(path)) {
+      return;
     }
 
-    return outputPath;
+    unlinkSync(path);
   }
 
-  generateFile(filePath: string, content: string): void {
-    const fullPath = join(this.getOutputDirectory(), filePath);
+  generateFile(
+    directory: OutputDirectory,
+    filePath: string,
+    content: string,
+  ): void {
+    const fullPath = join(this.#getOutputDirectory(), directory, filePath);
     const directoryPath = dirname(fullPath);
 
     // Ensure all directories in the path exist
@@ -30,5 +45,39 @@ export class OutputService {
 
     // Generate new file with content
     writeFileSync(fullPath, content);
+  }
+
+  getDataFromDirectory<T>(path: OutputDirectory): T[] {
+    const fullPath = join(this.#getOutputDirectory(), path);
+
+    if (!existsSync(fullPath)) {
+      this.#logger.warn(
+        `Tried to get data from ${fullPath}, but it does not exist`,
+      );
+      return [];
+    }
+
+    const entries = readdirSync(fullPath);
+    const fileContents: string[] = [];
+
+    for (const entry of entries) {
+      const entryPath = join(fullPath, entry);
+      const stat = statSync(entryPath);
+
+      if (stat.isFile()) {
+        const content = readFileSync(entryPath, 'utf-8');
+        fileContents.push(content);
+      }
+    }
+
+    return fileContents.map((content) => JSON.parse(content) as T);
+  }
+
+  #getOutputDirectory(): string {
+    if (!existsSync(outputPath)) {
+      mkdirSync(outputPath);
+    }
+
+    return outputPath;
   }
 }

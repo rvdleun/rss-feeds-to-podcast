@@ -1,21 +1,38 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RssConfig, RssFeed, RssFeedSchema } from '../config/schemas';
+import { RssFeed } from '../config/schemas';
 import * as Parser from 'rss-parser';
 import { OutputService } from '../output/output.service';
 import slugify from 'slugify';
-import { subHours, isAfter, parseISO } from 'date-fns';
+import { subHours, isAfter } from 'date-fns';
 import { Item } from 'rss-parser';
-
-console.log(Parser);
+import { AppConfigService } from '../config/config.service';
 
 @Injectable()
 export class RssFeedService {
   #logger = new Logger(this.constructor.name);
   #parser = new Parser();
 
-  constructor(private outputService: OutputService) {}
+  constructor(
+    private appConfigService: AppConfigService,
+    private outputService: OutputService,
+  ) {}
 
-  async storeItems({ src, title }: RssFeed, maxAgeHours?: number) {
+  async fetchRssFeeds() {
+    const { feeds, maxAgeHours } = this.appConfigService.getConfig('rss');
+
+    this.outputService.clearDirectory('rss-feeds');
+
+    if (maxAgeHours) {
+      const cutoffTime = subHours(new Date(), maxAgeHours);
+      this.#logger.log(
+        `Filtering items to last ${maxAgeHours} hours (since ${cutoffTime.toISOString()})`,
+      );
+    }
+
+    await Promise.all(feeds.map((feed) => this.#storeItems(feed, maxAgeHours)));
+  }
+
+  async #storeItems({ src, title }: RssFeed, maxAgeHours?: number) {
     this.#logger.log(`Fetching RSS Feed from ${src}`);
 
     const feed = await this.#parser.parseURL(src);
@@ -29,6 +46,7 @@ export class RssFeedService {
     const data = {
       title: title ?? feed.title,
       items: filteredItems.map((item) => ({
+        id: `${key}-${item.guid}`,
         src: item.link,
         title: item.title,
       })),
@@ -37,7 +55,8 @@ export class RssFeedService {
     this.#logger.log(`Storing RSS Feed to ${key}.json`);
 
     this.outputService.generateFile(
-      `rss-feeds/${key}.json`,
+      'rss-feeds',
+      `${key}.json`,
       JSON.stringify(data, null, 2),
     );
   }
