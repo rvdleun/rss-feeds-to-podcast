@@ -26,7 +26,7 @@ export class SegmentPickerService {
 
     let segmentsLeft =
       this.appConfigService.getConfig('podcast').numberOfSegments;
-    let segments: Segment[] = [];
+    const segments: Segment[] = [];
 
     while (segmentsLeft > 0) {
       this.#logger.log(`Creating segment ${segments.length + 1}`);
@@ -52,21 +52,15 @@ export class SegmentPickerService {
       }
 
       const segment = {
+        fileName: `${segmentsLeft}.json`,
         item,
         origin: feed.title,
       };
-
       segments.push(segment);
+
+      this.outputService.saveSegment(segment);
       segmentsLeft--;
     }
-
-    segments.forEach((segment, index) =>
-      this.outputService.generateFile(
-        'segments',
-        `${index}.json`,
-        JSON.stringify(segment, null, 2),
-      ),
-    );
 
     this.#logger.log('Segments picked.');
   }

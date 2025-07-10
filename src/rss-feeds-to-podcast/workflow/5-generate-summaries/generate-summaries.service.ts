@@ -45,11 +45,7 @@ export class GenerateSummariesService {
       this.#logger.log(`Summary for segment ${i + 1} generated`);
 
       segment.summary = summary;
-      this.outputService.generateFile(
-        'segments',
-        `${i}.json`,
-        JSON.stringify(segment, null, 2),
-      );
+      this.outputService.saveSegment(segment);
     }
 
     this.#logger.log('Summaries generated.');

@@ -81,11 +81,7 @@ export class ContentScraperService implements OnModuleInit {
       segment.content = textContent;
       segment.siteName = siteName;
 
-      this.outputService.generateFile(
-        'segments',
-        `${i}.json`,
-        JSON.stringify(segment, null, 2),
-      );
+      this.outputService.saveSegment(segment);
     }
   }
 

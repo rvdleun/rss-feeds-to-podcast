@@ -2,6 +2,8 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { AppConfigService } from '../config/config.service';
 import { OpenAI } from 'openai';
 import { AppConfig } from '../config/config.types';
+import { zodResponseFormat } from 'openai/helpers/zod';
+import { z } from 'zod';
 
 @Injectable()
 export class LlmService implements OnModuleInit {
@@ -16,7 +18,10 @@ export class LlmService implements OnModuleInit {
     this.#client = new OpenAI(this.#config);
   }
 
-  async generateText(prompt: string) {
+  async generateText<T = string>(
+    prompt: string,
+    schema?: z.ZodSchema<T>,
+  ): Promise<T> {
     try {
       this.#logger.debug(`Generating text with the following prompt:
 
@@ -25,13 +30,19 @@ ${prompt}`);
       const result = await this.#client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model: this.#config.model,
+        response_format: schema
+          ? zodResponseFormat(schema, 'schema')
+          : undefined,
       });
 
       const message = result.choices[0].message.content;
-
       this.#logger.debug(`Response: `, message);
 
-      return message;
+      if (schema) {
+        return JSON.parse(message) as T;
+      }
+
+      return message as T;
     } catch (error) {
       this.#logger.error(error);
     }

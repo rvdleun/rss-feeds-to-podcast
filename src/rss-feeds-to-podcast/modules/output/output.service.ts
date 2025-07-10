@@ -10,6 +10,7 @@ import {
   statSync,
 } from 'fs';
 import { OutputDirectory } from '../../types/output';
+import { Segment } from '../../types/segment';
 
 const outputPath = join(process.cwd(), 'output');
 
@@ -69,6 +70,23 @@ export class OutputService {
     }
 
     return fileContents.map((content) => JSON.parse(content) as T);
+  }
+
+  removeSegment(segment: Segment) {
+    const fullPath = join(
+      this.#getOutputDirectory(),
+      'segments',
+      segment.fileName,
+    );
+    unlinkSync(fullPath);
+  }
+
+  saveSegment(segment: Segment) {
+    this.generateFile(
+      'segments',
+      segment.fileName,
+      JSON.stringify(segment, null, 2),
+    );
   }
 
   #getOutputDirectory(): string {
