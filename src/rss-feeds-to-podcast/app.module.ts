@@ -4,6 +4,7 @@ import { SegmentPickerModule } from './workflow/2-segment-picker/segment-picker.
 import { ContentScraperModule } from './workflow/3-content-scraper/content-scraper.module';
 import { GenerateSummariesModule } from './workflow/5-generate-summaries/generate-summaries.module';
 import { FilterSegmentsModule } from './workflow/4-filter-segments/filter-segments.module';
+import { GenerateScriptsModule } from './workflow/6-generate-scripts/generate-scripts.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { FilterSegmentsModule } from './workflow/4-filter-segments/filter-segmen
     ContentScraperModule,
     FilterSegmentsModule,
     GenerateSummariesModule,
+    GenerateScriptsModule,
   ],
 })
 export class AppModule {}

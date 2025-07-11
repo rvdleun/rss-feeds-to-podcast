@@ -1,1 +1,8 @@
+behaviour: The hosts have an amicable relationship and enjoy lively, engaging discussions together.
+hosts:
+  - id: julian-styles
+    description: "Julian Styles. Personality: Tech-savvy, Confident, Witty, Perfectionist, Laid-Back"
+  - id: phoebe-morales
+    description: "Phoebe Morales. Personality: Curious, Empathetic, Opinionated, Creative, Sarcastic"
+
 numberOfSegments: 15
