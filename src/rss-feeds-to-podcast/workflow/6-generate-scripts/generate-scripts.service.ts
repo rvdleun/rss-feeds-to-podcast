@@ -11,6 +11,12 @@ import {
 import { z } from 'zod';
 import { generateSegmentDescription } from '../../utils/segment';
 import { DIVIDER } from '../../utils/console';
+import {
+  ScriptDelayItem,
+  ScriptHostSpeaksItem,
+  ScriptItem,
+  ScriptSfxItem,
+} from './generate-scripts.types';
 
 type IntroOutroType = 'intro' | 'outro';
 
@@ -23,6 +29,57 @@ export class GenerateScriptsService {
     private llmService: LlmService,
     private outputService: OutputService,
   ) {}
+
+  async generateFinalScript() {
+    this.#logger.log('Generating final script');
+
+    const script: ScriptItem[] = [
+      {
+        type: 'sfx',
+        src: 'jingle',
+      } as ScriptSfxItem,
+      {
+        type: 'delay',
+        duration: 1000,
+      } as ScriptDelayItem,
+    ];
+
+    const intro = this.outputService.getContent<SegmentScriptItem[]>(
+      'intro-outtro',
+      'intro.json',
+    );
+    script.push(...this.#segmentScriptItem(intro));
+    script.push({
+      type: 'sfx',
+      src: 'new-segment',
+    } as ScriptSfxItem);
+
+    const segments =
+      this.outputService.getDataFromDirectory<Segment>('segments');
+    script.push(
+      ...segments.map(({ script }) => this.#segmentScriptItem(script)).flat(),
+      {
+        type: 'sfx',
+        src: 'new-segment',
+      } as ScriptSfxItem,
+    );
+
+    const outro = this.outputService.getContent<SegmentScriptItem[]>(
+      'intro-outtro',
+      'outro.json',
+    );
+    script.push(...this.#segmentScriptItem(outro));
+    script.push({
+      type: 'sfx',
+      src: 'jingle',
+    } as ScriptSfxItem);
+
+    this.outputService.generateFile(
+      '',
+      'script.json',
+      JSON.stringify(script, null, 2),
+    );
+  }
 
   async generateIntroOutputScripts(type: IntroOutroType) {
     this.#logger.log(`Generating ${type} script`);
@@ -52,7 +109,6 @@ export class GenerateScriptsService {
     this.#logger.log('Generating segment scripts');
 
     const config = this.appConfigService.getConfig('podcast');
-    const hostIds = config.hosts.map(({ id }) => id);
 
     const segments =
       this.outputService.getDataFromDirectory<Segment>('segments');
@@ -90,5 +146,23 @@ export class GenerateScriptsService {
         content: z.string(),
       }),
     );
+  }
+
+  #segmentScriptItem(items: SegmentScriptItem[]): ScriptItem[] {
+    return [
+      ...items
+        .map(({ host, content }) => [
+          {
+            content,
+            host,
+            type: 'host-speaks',
+          } as ScriptHostSpeaksItem,
+          {
+            type: 'delay',
+            duration: Math.floor(Math.random() * 100),
+          } as ScriptDelayItem,
+        ])
+        .flat(),
+    ];
   }
 }

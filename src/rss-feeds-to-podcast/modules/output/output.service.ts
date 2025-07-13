@@ -46,6 +46,11 @@ export class OutputService {
     writeFileSync(fullPath, content);
   }
 
+  getContent<T>(path: OutputDirectory, file: string): T {
+    const fullPath = join(this.#getOutputDirectory(), path, file);
+    return JSON.parse(readFileSync(fullPath, 'utf-8')) as T;
+  }
+
   getDataFromDirectory<T>(path: OutputDirectory): T[] {
     const fullPath = join(this.#getOutputDirectory(), path);
 
