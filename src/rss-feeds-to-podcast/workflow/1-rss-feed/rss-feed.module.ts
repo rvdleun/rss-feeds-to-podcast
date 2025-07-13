@@ -5,6 +5,7 @@ import { OutputModule } from '../../modules/output/output.module';
 import { AppConfigModule } from '../../modules/config/config.module';
 
 @Module({
+  exports: [RssFeedService],
   imports: [AppConfigModule, OutputModule],
   providers: [RssFeedCommand, RssFeedService],
 })

@@ -5,6 +5,7 @@ import { FilterSegmentsService } from './filter-segments.service';
 import { LlmModule } from '../../modules/llm/llm.module';
 
 @Module({
+  exports: [FilterSegmentsService],
   imports: [LlmModule, OutputModule],
   providers: [filterSegmentsCommand, FilterSegmentsService],
 })

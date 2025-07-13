@@ -5,6 +5,7 @@ import { AppConfigModule } from '../../modules/config/config.module';
 import { OutputModule } from '../../modules/output/output.module';
 
 @Module({
+  exports: [ContentScraperService],
   imports: [AppConfigModule, OutputModule],
   providers: [ContentScraperCommand, ContentScraperService],
 })

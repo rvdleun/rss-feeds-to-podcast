@@ -6,9 +6,15 @@ import { GenerateSummariesModule } from './workflow/5-generate-summaries/generat
 import { FilterSegmentsModule } from './workflow/4-filter-segments/filter-segments.module';
 import { GenerateScriptsModule } from './workflow/6-generate-scripts/generate-scripts.module';
 import { GenerateAudioModule } from './workflow/7-generate-audio/generate-audio.module';
+import { AppCommand, ConfirmationQuestion } from './app.command';
+import { AppConfigModule } from './modules/config/config.module';
+import { OutputModule } from './modules/output/output.module';
 
 @Module({
   imports: [
+    AppConfigModule,
+    OutputModule,
+
     RssFeedModule,
     SegmentPickerModule,
     ContentScraperModule,
@@ -17,5 +23,6 @@ import { GenerateAudioModule } from './workflow/7-generate-audio/generate-audio.
     GenerateScriptsModule,
     GenerateAudioModule,
   ],
+  providers: [AppCommand, ConfirmationQuestion],
 })
 export class AppModule {}

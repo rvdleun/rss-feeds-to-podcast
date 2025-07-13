@@ -29,7 +29,9 @@ export class RssFeedService {
       );
     }
 
-    await Promise.all(feeds.map((feed) => this.#storeItems(feed, maxAgeHours)));
+    for (let i = 0; i < feeds.length; i++) {
+      await this.#storeItems(feeds[i], maxAgeHours);
+    }
   }
 
   async #storeItems({ src, title }: RssFeed, maxAgeHours?: number) {

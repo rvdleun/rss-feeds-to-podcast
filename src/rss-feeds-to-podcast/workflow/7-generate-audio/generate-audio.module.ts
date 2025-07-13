@@ -8,6 +8,7 @@ import {
 import { AppConfigModule } from '../../modules/config/config.module';
 
 @Module({
+  exports: [GenerateAudioService],
   imports: [AppConfigModule, OutputModule],
   providers: [GenerateAudioCommand, GenerateAudioService, MergeAudioCommand],
 })

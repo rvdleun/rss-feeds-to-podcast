@@ -10,6 +10,7 @@ import { GenerateScriptsService } from './generate-scripts.service';
 import { AppConfigModule } from '../../modules/config/config.module';
 
 @Module({
+  exports: [GenerateScriptsService],
   imports: [AppConfigModule, LlmModule, OutputModule],
   providers: [
     GenerateFinalScriptCommand,
