@@ -8,6 +8,7 @@ export const PodcastHostSchema = z.object({
 export const PodcastSchema = z.object({
   behaviour: z.string(),
   hosts: z.array(PodcastHostSchema),
+  name: z.string(),
   numberOfSegments: z.number(),
 });
 

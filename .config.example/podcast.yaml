@@ -4,5 +4,5 @@ hosts:
     description: "Julian Styles. Personality: Tech-savvy, Confident, Witty, Perfectionist, Laid-Back"
   - id: phoebe-morales
     description: "Phoebe Morales. Personality: Curious, Empathetic, Opinionated, Creative, Sarcastic"
-
+name: From the Cluster
 numberOfSegments: 15

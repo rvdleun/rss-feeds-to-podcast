@@ -1,1 +1,1 @@
-export type OutputDirectory = '' | 'rss-feeds' | 'segments';
+export type OutputDirectory = '' | 'intro-outtro' | 'rss-feeds' | 'segments';
