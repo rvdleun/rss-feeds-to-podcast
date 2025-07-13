@@ -1,5 +1,4 @@
 import { Command, CommandRunner } from 'nest-commander';
-import { GenerateScriptsService } from '../6-generate-scripts/generate-scripts.service';
 import { GenerateAudioService } from './generate-audio.service';
 
 @Command({
@@ -13,5 +12,19 @@ export class GenerateAudioCommand extends CommandRunner {
 
   async run(): Promise<void> {
     await this.generateAudioService.generateAudioFiles();
+  }
+}
+
+@Command({
+  name: 'merge-audio',
+  description: 'Merges all generated audio',
+})
+export class MergeAudioCommand extends CommandRunner {
+  constructor(private generateAudioService: GenerateAudioService) {
+    super();
+  }
+
+  async run(): Promise<void> {
+    await this.generateAudioService.mergeAudioFiles();
   }
 }

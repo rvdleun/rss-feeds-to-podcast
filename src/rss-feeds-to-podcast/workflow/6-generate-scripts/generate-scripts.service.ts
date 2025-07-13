@@ -53,6 +53,10 @@ export class GenerateScriptsService {
       type: 'sfx',
       src: 'new-segment',
     } as ScriptSfxItem);
+    script.push({
+      type: 'delay',
+      duration: 1000 + Math.floor(Math.random() * 100),
+    } as ScriptDelayItem);
 
     const segments =
       this.outputService.getDataFromDirectory<Segment>('segments');
@@ -64,6 +68,10 @@ export class GenerateScriptsService {
             type: 'sfx',
             src: 'new-segment',
           } as ScriptSfxItem,
+          {
+            type: 'delay',
+            duration: 1000 + Math.floor(Math.random() * 100),
+          } as ScriptDelayItem,
         ])
         .flat(),
     );

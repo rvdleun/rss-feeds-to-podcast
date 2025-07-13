@@ -9,8 +9,6 @@ import {
 import { copyFileSync, createWriteStream, existsSync, mkdirSync } from 'fs';
 import { configPath } from '../../modules/config/config.loader';
 import { join } from 'path';
-import { ConfigService } from '@nestjs/config';
-import { ExternalServicesConfig } from '../../modules/config/schemas/external-services.schema';
 import { AppConfigService } from '../../modules/config/config.service';
 import { pipeline } from 'stream/promises';
 import { execSync } from 'child_process';
@@ -97,5 +95,28 @@ export class GenerateAudioService {
         this.#logger.log(`\[${i}\] Ignoring ${item.type} item.`);
       }
     }
+  }
+
+  mergeAudioFiles() {
+    const outputDirectory = join(outputPath, 'audio');
+    const script = this.outputService.getContent<ScriptItem[]>(
+      '',
+      'script.json',
+    );
+
+    this.#logger.log('Merging audio files');
+
+    this.#logger.log('Generating concat-list.txt');
+    const concatListContent = script
+      .map((_, i) => `file ${outputDirectory}/audio-${i}.mp3`)
+      .join('\n');
+    this.outputService.generateFile('', 'concat-list.txt', concatListContent);
+
+    this.#logger.log('Merging audio');
+    execSync(
+      `ffmpeg -f concat -safe 0 -i "${outputPath}/concat-list.txt" -c:a libmp3lame -b:a 128k "${outputPath}"/podcast.mp3 -y`,
+    );
+
+    this.#logger.log('Audio merged.');
   }
 }
