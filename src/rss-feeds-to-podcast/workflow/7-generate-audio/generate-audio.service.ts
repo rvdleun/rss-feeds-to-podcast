@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { outputPath, OutputService } from '../../modules/output/output.service';
 import {
+  ScriptDelayItem,
   ScriptHostSpeaksItem,
   ScriptItem,
   ScriptSfxItem,
@@ -12,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { ExternalServicesConfig } from '../../modules/config/schemas/external-services.schema';
 import { AppConfigService } from '../../modules/config/config.service';
 import { pipeline } from 'stream/promises';
+import { execSync } from 'child_process';
 
 @Injectable()
 export class GenerateAudioService {
@@ -42,7 +44,18 @@ export class GenerateAudioService {
     for (let i = 0; i < script.length; i++) {
       const item = script[i];
 
-      if (item.type === 'host-speaks') {
+      if (item.type === 'delay') {
+        const { duration } = item as ScriptDelayItem;
+        const silentFile = `${outputDirectory}/audio-${i}.mp3`;
+        const durationSeconds = duration / 1000;
+
+        this.#logger.log(
+          `\[${i}\] Generating silent audio file for ${durationSeconds} seconds...`,
+        );
+        execSync(
+          `ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -t ${durationSeconds} "${silentFile}" -y`,
+        );
+      } else if (item.type === 'host-speaks') {
         const { content, host } = item as ScriptHostSpeaksItem;
 
         const { voice } = hosts.find(({ id }) => id === host)!;
@@ -50,6 +63,7 @@ export class GenerateAudioService {
         this.#logger.log(
           `\[${i}\] Generating ${host} speech using ${voice}: ${content}`,
         );
+
         const response = await fetch(`${fastKokoHref}/v1/audio/speech`, {
           method: 'POST',
           headers: {
