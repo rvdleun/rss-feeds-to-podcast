@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const PodcastHostSchema = z.object({
   id: z.string(),
   description: z.string(),
+  voice: z.string(),
 });
 
 export const PodcastSchema = z.object({

@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 export const ExternalServicesSchema = z.object({
+  fastKoko: z.object({
+    href: z.string(),
+  }),
   llm: z.object({
     apiKey: z.string(),
     model: z.string(),

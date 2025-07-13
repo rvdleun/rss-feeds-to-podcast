@@ -57,11 +57,15 @@ export class GenerateScriptsService {
     const segments =
       this.outputService.getDataFromDirectory<Segment>('segments');
     script.push(
-      ...segments.map(({ script }) => this.#segmentScriptItem(script)).flat(),
-      {
-        type: 'sfx',
-        src: 'new-segment',
-      } as ScriptSfxItem,
+      ...segments
+        .map(({ script }) => [
+          ...this.#segmentScriptItem(script),
+          {
+            type: 'sfx',
+            src: 'new-segment',
+          } as ScriptSfxItem,
+        ])
+        .flat(),
     );
 
     const outro = this.outputService.getContent<SegmentScriptItem[]>(

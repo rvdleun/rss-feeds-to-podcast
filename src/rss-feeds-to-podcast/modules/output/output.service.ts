@@ -12,7 +12,7 @@ import {
 import { OutputDirectory } from '../../types/output';
 import { Segment } from '../../types/segment';
 
-const outputPath = join(process.cwd(), 'output');
+export const outputPath = join(process.cwd(), 'output');
 
 @Injectable()
 export class OutputService {

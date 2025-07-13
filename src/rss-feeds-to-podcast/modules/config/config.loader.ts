@@ -12,7 +12,7 @@ const logger = new Logger('ConfigLoader');
 const expectedConfigPath = join(process.cwd(), '.config');
 const exampleConfigPath = join(process.cwd(), '.config.example');
 
-let configPath: string;
+export let configPath: string;
 
 if (existsSync(expectedConfigPath)) {
   configPath = expectedConfigPath;
