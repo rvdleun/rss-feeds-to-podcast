@@ -32,6 +32,7 @@ export class GenerateAudioService {
       '',
       'script.json',
     );
+    const total = script.length;
 
     if (!existsSync(outputDirectory)) {
       mkdirSync(outputDirectory, { recursive: true });
@@ -45,10 +46,10 @@ export class GenerateAudioService {
       if (item.type === 'delay') {
         const { duration } = item as ScriptDelayItem;
         const silentFile = `${outputDirectory}/audio-${i}.mp3`;
-        const durationSeconds = duration / 1000;
+        const durationSeconds = Math.max(0.05, duration / 1000);
 
         this.#logger.log(
-          `\[${i}\] Generating silent audio file for ${durationSeconds} seconds...`,
+          `[${i}/${total}] Generating silent audio file for ${durationSeconds} seconds...`,
         );
         execSync(
           `ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -t ${durationSeconds} "${silentFile}" -y`,
@@ -59,7 +60,7 @@ export class GenerateAudioService {
         const { voice } = hosts.find(({ id }) => id === host)!;
 
         this.#logger.log(
-          `\[${i}\] Generating ${host} speech using ${voice}: ${content}`,
+          `[${i}/${total}] Generating ${host} speech using ${voice}: ${content}`,
         );
 
         const response = await fetch(`${fastKokoHref}/v1/audio/speech`, {
@@ -86,13 +87,13 @@ export class GenerateAudioService {
         await pipeline(response.body, fileStream);
       } else if (item.type === 'sfx') {
         const { src } = item as ScriptSfxItem;
-        this.#logger.log(`\[${i}\] Setting up ${src} SFX...`);
+        this.#logger.log(`[${i}/${total}] Setting up ${src} SFX...`);
         copyFileSync(
           `${assetsDirectory}/${src}.mp3`,
           `${outputDirectory}/audio-${i}.mp3`,
         );
       } else {
-        this.#logger.log(`\[${i}\] Ignoring ${item.type} item.`);
+        this.#logger.log(`[${i}/${total}] Ignoring ${item.type} item.`);
       }
     }
   }
