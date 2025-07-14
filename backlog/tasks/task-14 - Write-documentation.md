@@ -1,7 +1,7 @@
 ---
 id: task-14
 title: Write documentation
-status: To Do
+status: In Progress
 assignee: []
 created_date: '2025-07-13'
 updated_date: '2025-07-14'
