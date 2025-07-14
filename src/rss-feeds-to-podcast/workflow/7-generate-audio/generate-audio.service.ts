@@ -26,7 +26,7 @@ export class GenerateAudioService {
     const assetsDirectory = join(configPath, 'assets');
     const { hosts } = this.appConfigService.getConfig('podcast');
     const { href: fastKokoHref } =
-      this.appConfigService.getConfig('externalServices').fastKoko;
+      this.appConfigService.getConfig('externalServices').textToSpeech;
     const outputDirectory = join(outputPath, 'audio');
     const script = this.outputService.getContent<ScriptItem[]>(
       '',

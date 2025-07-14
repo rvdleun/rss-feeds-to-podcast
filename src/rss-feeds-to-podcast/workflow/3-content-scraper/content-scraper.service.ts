@@ -10,7 +10,7 @@ import { DIVIDER } from '../../utils/console';
 @Injectable()
 export class ContentScraperService implements OnModuleInit {
   #logger = new Logger(this.constructor.name);
-  #scrapperConfig: ExternalServicesConfig['scrapper'];
+  #scrapperConfig: ExternalServicesConfig['webScraper'];
 
   constructor(
     private appConfigService: AppConfigService,
@@ -19,7 +19,7 @@ export class ContentScraperService implements OnModuleInit {
 
   onModuleInit() {
     this.#scrapperConfig =
-      this.appConfigService.getConfig('externalServices').scrapper;
+      this.appConfigService.getConfig('externalServices').webScraper;
   }
 
   async scrapeContentFromSegments() {

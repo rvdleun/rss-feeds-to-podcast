@@ -93,9 +93,9 @@ export class AppCommand extends CommandRunner {
     /* Merge all the scripts together, along with SFX and delays between lines */
     await this.generateScriptsService.generateFinalScript();
 
-    /* Generate audio files in linear order
+    /* Generate audio files for each entry in script.json
          1. Create empty audio files for delays
-         2. Copy sfx sounds
+         2. Copy sfx sounds from config/assets
          3. Generate voice files for each host, using Kokoro
      */
     await this.generateAudioService.generateAudioFiles();

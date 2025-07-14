@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
 export const ExternalServicesSchema = z.object({
-  fastKoko: z.object({
-    href: z.string(),
-  }),
   llm: z.object({
     apiKey: z.string(),
     model: z.string(),
@@ -14,7 +11,10 @@ export const ExternalServicesSchema = z.object({
     temperature: z.number().optional(),
     think: z.boolean().optional(),
   }),
-  scrapper: z.object({
+  textToSpeech: z.object({
+    href: z.string(),
+  }),
+  webScraper: z.object({
     cache: z.boolean(),
     href: z.string(),
     incognito: z.boolean(),
