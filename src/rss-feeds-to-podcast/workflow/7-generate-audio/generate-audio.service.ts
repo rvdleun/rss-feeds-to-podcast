@@ -10,8 +10,8 @@ import { copyFileSync, createWriteStream, existsSync, mkdirSync } from 'fs';
 import { configPath } from '../../modules/config/config.loader';
 import { join } from 'path';
 import { AppConfigService } from '../../modules/config/config.service';
-import { pipeline } from 'stream/promises';
 import { execSync } from 'child_process';
+import { TextToSpeechService } from '../../modules/text-to-speech/text-to-speech.service';
 
 @Injectable()
 export class GenerateAudioService {
@@ -20,13 +20,12 @@ export class GenerateAudioService {
   constructor(
     private appConfigService: AppConfigService,
     private outputService: OutputService,
+    private textToSpeechService: TextToSpeechService,
   ) {}
 
   async generateAudioFiles() {
     const assetsDirectory = join(configPath, 'assets');
     const { hosts } = this.appConfigService.getConfig('podcast');
-    const { href: fastKokoHref } =
-      this.appConfigService.getConfig('externalServices').textToSpeech;
     const outputDirectory = join(outputPath, 'audio');
     const script = this.outputService.getContent<ScriptItem[]>(
       '',
@@ -63,28 +62,11 @@ export class GenerateAudioService {
           `[${i}/${total}] Generating ${host} speech using ${voice}: ${content}`,
         );
 
-        const response = await fetch(`${fastKokoHref}/v1/audio/speech`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            download_format: 'mp3',
-            input: content,
-            response_format: 'mp3',
-            return_download_link: true,
-            speed: 1,
-            stream: true,
-            voice,
-          }),
-        });
-
-        const fileStream = createWriteStream(
+        await this.textToSpeechService.generate(
+          content,
+          voice,
           `${outputDirectory}/audio-${i}.mp3`,
         );
-
-        // Use pipeline to handle streaming and error management
-        await pipeline(response.body, fileStream);
       } else if (item.type === 'sfx') {
         const { src } = item as ScriptSfxItem;
         this.#logger.log(`[${i}/${total}] Setting up ${src} SFX...`);

@@ -6,10 +6,11 @@ import {
   MergeAudioCommand,
 } from './generate-audio.command';
 import { AppConfigModule } from '../../modules/config/config.module';
+import { TextToSpeechModule } from 'src/rss-feeds-to-podcast/modules/text-to-speech/text-to-speech.module';
 
 @Module({
   exports: [GenerateAudioService],
-  imports: [AppConfigModule, OutputModule],
+  imports: [AppConfigModule, OutputModule, TextToSpeechModule],
   providers: [GenerateAudioCommand, GenerateAudioService, MergeAudioCommand],
 })
 export class GenerateAudioModule {}

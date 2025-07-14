@@ -1,34 +1,26 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OutputService } from '../../modules/output/output.service';
 import { AppConfigService } from '../../modules/config/config.service';
-import { ScrapperArticle, ScrapperPing } from './content-scraper.types';
+import { ScrapperArticle } from '../../modules/web-scraper/web-scraper.types';
 import { Segment } from '../../types/segment';
-import { ExternalServicesConfig } from '../../modules/config/schemas/external-services.schema';
 import { generateSegmentDescription } from '../../utils/segment';
 import { DIVIDER } from '../../utils/console';
+import { WebScraperService } from '../../modules/web-scraper/web-scraper.service';
 
 @Injectable()
-export class ContentScraperService implements OnModuleInit {
+export class ContentScraperService {
   #logger = new Logger(this.constructor.name);
-  #scrapperConfig: ExternalServicesConfig['webScraper'];
 
   constructor(
-    private appConfigService: AppConfigService,
     private outputService: OutputService,
+    private webScraperService: WebScraperService,
   ) {}
-
-  onModuleInit() {
-    this.#scrapperConfig =
-      this.appConfigService.getConfig('externalServices').webScraper;
-  }
 
   async scrapeContentFromSegments() {
     this.#logger.log('Scraping content from segments');
 
-    const { isConnected } =
-      await this.#makeScrapperRequest<ScrapperPing>('/ping');
-
-    if (!isConnected) {
+    const isAvailable = await this.webScraperService.isAvailable();
+    if (!isAvailable) {
       this.#logger.error(
         'Scrapper is not available. Make sure that it is running locally and the right href is set in external-services.yaml',
       );
@@ -57,17 +49,8 @@ export class ContentScraperService implements OnModuleInit {
 
       this.#logger.log(`Scraping content...`);
 
-      const { cache, incognito, timeout, waitUntil } = this.#scrapperConfig;
-
-      const searchParams = new URLSearchParams();
-      searchParams.set('url', segment.item.src);
-      searchParams.set('cache', cache.toString());
-      searchParams.set('incognito', incognito.toString());
-      searchParams.set('timeout', timeout.toString());
-      searchParams.set('wait-until', waitUntil.toString());
-
-      const response = await this.#makeScrapperRequest<ScrapperArticle>(
-        '/api/article?' + searchParams.toString(),
+      const response = await this.webScraperService.scrapeContent(
+        segment.item.src,
       );
 
       if (!response) {
@@ -90,26 +73,5 @@ export class ContentScraperService implements OnModuleInit {
     }
 
     this.#logger.log('Content scraped.');
-  }
-
-  async #makeScrapperRequest<T>(endpoint: string): Promise<T> {
-    try {
-      const href = this.#scrapperConfig.href + endpoint;
-      this.#logger.debug(`Making request to scrapper: ${href}`);
-
-      const request = await fetch(href);
-
-      if (!request.ok) {
-        throw new Error(`Request failed with status ${request.status}`);
-        return undefined;
-      }
-
-      const json = await request.json();
-
-      return json as T;
-    } catch (error) {
-      this.#logger.log('Error while scraping content.');
-      this.#logger.error(error);
-    }
   }
 }

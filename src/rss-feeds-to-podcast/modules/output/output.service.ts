@@ -18,15 +18,6 @@ export const outputPath = join(process.cwd(), 'output');
 export class OutputService {
   #logger = new Logger(this.constructor.name);
 
-  clearDirectory(path: OutputDirectory) {
-    const fullPath = join(this.#getOutputDirectory(), path);
-    if (!existsSync(fullPath)) {
-      return;
-    }
-
-    unlinkSync(fullPath);
-  }
-
   generateFile(
     directory: OutputDirectory,
     filePath: string,

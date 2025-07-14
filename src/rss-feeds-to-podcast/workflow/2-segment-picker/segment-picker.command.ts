@@ -15,8 +15,6 @@ export class SegmentPickerCommand extends CommandRunner {
   }
 
   async run(): Promise<void> {
-    this.outputService.clearDirectory('segments');
-
     await this.segmentPickerServic.createSegments();
   }
 }

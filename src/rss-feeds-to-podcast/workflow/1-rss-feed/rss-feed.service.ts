@@ -20,8 +20,6 @@ export class RssFeedService {
   async fetchRssFeeds() {
     const { feeds, maxAgeHours } = this.appConfigService.getConfig('rss');
 
-    this.outputService.clearDirectory('rss-feeds');
-
     if (maxAgeHours) {
       const cutoffTime = subHours(new Date(), maxAgeHours);
       this.#logger.log(
