@@ -4,8 +4,10 @@ title: Check if there is no output directory before starting pipeline
 status: To Do
 assignee: []
 created_date: '2025-07-16'
+updated_date: '2025-07-16'
 labels: []
 dependencies: []
+priority: high
 ---
 
 ## Description
