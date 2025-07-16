@@ -1,0 +1,34 @@
+name: rss-feeds-to-podcast-development
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "2401:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    command: serve
+
+  # Service to download the model automatically
+  ollama-setup:
+    image: curlimages/curl:latest
+    depends_on:
+      - ollama
+    restart: "no"
+    command: >
+      sh -c "
+        echo 'Waiting for Ollama server to be ready...' &&
+        until curl -f http://ollama:11434/api/version; do
+          echo 'Waiting for Ollama server...'
+          sleep 5
+        done &&
+        echo 'Ollama server is ready. Downloading llama3.2:3b model...' &&
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"llama3.2:3b\"}' &&
+        echo 'Model download completed!'
+      "
+
+volumes:
+  ollama_data:
+    driver: local

@@ -2,20 +2,15 @@ name: rss-feeds-to-podcast-development
 services:
   scrapper:
     ports:
-      - 2400:3000
+      - 2402:3000
     volumes:
       - scrapper_data:/home/user/user_data
       - scrapper_scripts:/home/user/user_scripts
-    container_name: scrapper
     image: amerkurev/scrapper:latest
 networks:
   app_network:
     driver: bridge
+
 volumes:
   scrapper_data:
   scrapper_scripts:
-
-configs:
-  qdrant_config:
-    content: |
-      log_level: INFO

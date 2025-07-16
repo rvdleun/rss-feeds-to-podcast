@@ -1,0 +1,16 @@
+name: rss-feeds-to-podcast-development
+services:
+  kokoro-fastapi-cpu:
+    ports:
+      - 2400:8880
+#   CPU
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+#   GPU
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#              - driver: nvidia
+#                count: all
+#                capabilities:
+#                  - gpu

@@ -1,12 +1,18 @@
+# All these URLs are configured to work with the docker-compose files
+# in external services.
+
 llm:
   apiKey: 'ollama'
   service: 'ollama'
-  baseURL: 'http://localhost:11434/v1'
+  baseURL: 'http://localhost:2401/v1'
   model: 'llama3.1:8b'
 
-scrapper:
-  cache: false
+textToSpeech:
   href: "http://localhost:2400"
+
+webScraper:
+  cache: false
+  href: "http://localhost:2402"
   incognito: true
   timeout: 10000
   waitUntil: networkidle

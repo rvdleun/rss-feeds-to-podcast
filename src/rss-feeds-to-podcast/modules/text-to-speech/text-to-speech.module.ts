@@ -1,10 +1,10 @@
-import { AppConfigService } from '../config/config.service';
 import { TextToSpeechService } from './text-to-speech.service';
 import { Module } from '@nestjs/common';
+import { AppConfigModule } from '../config/config.module';
 
 @Module({
   exports: [TextToSpeechService],
-  imports: [AppConfigService],
+  imports: [AppConfigModule],
   providers: [TextToSpeechService],
 })
 export class TextToSpeechModule {}

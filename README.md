@@ -130,7 +130,7 @@ All the code for these steps can be found in [src/rss-feeds-to-podcast/workflow]
 
 - **Dependencies**:
   - Dependencies listed in `package.json`
-  - A LLM service which supports the [OpenAI API](https://platform.openai.com/docs/api-reference/introduction)
+  - A LLM service which supports the [OpenAI API standards](https://platform.openai.com/docs/api-reference/introduction)
   - [FFmpeg](https://github.com/FFmpeg/FFmpeg)
   - [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
   - [Scrapper](https://github.com/amerkurev/scrapper)
