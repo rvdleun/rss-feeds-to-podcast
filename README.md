@@ -50,16 +50,13 @@ Copy `.config.example` to `.config`
 cp -r .config.example .config
 ```
 
-Optional: Edit `.config/rss.yaml` and add your favorite feeds.
+Setup the external services in `.config/external-services.yaml`. There are docker-compose files in the [external-services](./external-services) directory to start them locally if you don't have one available.
+
+Edit `.config/rss.yaml` and add your favorite feeds.
 
 Start all external services via docker.
 
-```bash
-cd external-services
-docker compose up -d
-```
-
-Generate a new podcast
+Once everything is configured, generate a new podcast
 ```bash
 npm run start
 ```
