@@ -5,9 +5,11 @@ Blueprints are customizable workflows that help developers build AI applications
 These docs are your companion to mastering this Blueprint.
 
 ### Built with
-- Python 3.10+
-- Tool 1
-- Tool 2
+- Node V22
+- [Nest.JS](https://nestjs.com/)
+- [FFmpeg](https://github.com/FFmpeg/FFmpeg)
+- [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
+- [Scrapper](https://github.com/amerkurev/scrapper)
 
 
 ---

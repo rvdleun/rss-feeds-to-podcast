@@ -26,7 +26,7 @@
 
 </div>
 
-# Blueprint title
+# RSS-Feeds-to-Podcast: A Blueprint for generating podcasts from articles in RSS Feeds
 
 This blueprint guides you to generate an audio file where two hosts will discuss randomly selected articles from a number of RSS feeds. The result is podcast that is focused solely on the user's interests.
 
@@ -56,6 +56,11 @@ Edit `.config/rss.yaml` and add your favorite feeds.
 
 Start all external services via docker.
 
+Make sure that you have ffmpeg installed.
+```bash
+apt-get install ffmpeg
+```
+
 Once everything is configured, generate a new podcast
 ```bash
 npm run start
@@ -73,25 +78,25 @@ This blueprint will generate a podcast which will discuss a number of articles f
 
 It does this by taking the following steps:
 
-1. Gather RSS Feeds
+1. Gather RSS Feeds ([code](./src/rss-feeds-to-podcast/workflow/1-rss-feed/rss-feed.service.ts))
     * All the configured RSS feeds are retrieved and stored in `output/rss-feeds`
     * These can be configured in `.config/rss.yml`
-2. Select articles for discussion
+2. Select articles for discussion ([code](./src/rss-feeds-to-podcast/workflow/2-segment-picker/segment-picker.service.ts))
     * At random, it will pick a number of articles from the RSS feeds.
     * There is no further logic here yet. It will be completely at random.
     * The number of segments can be configured in `.config/podcast.yml` as `numberOfSegments`.
     * The data for each selected article is stored in `output/segments`. These files will be updated throughout the pipeline.
-3. Scrape content
+3. Scrape content ([code](./src/rss-feeds-to-podcast/workflow/3-content-scraper/content-scraper.service.ts))
     * Using [Scrapper](https://github.com/amerkurev/scrapper), the contents of each article are retrieved.
-4. Filter segments
+4. Filter segments ([code](./src/rss-feeds-to-podcast/workflow/4-filter-segments/filter-segments.service.ts))
     * It will now go through each selected article and determine if they are eligible for the podcast.
     * If no content was retrieved in the previous step, it is discarded.
     * Next, it will use a LLM prompt to determine if the article is actually viable for the podcast. This will filter out pages that are, for example, just advertisements or if the scraper was only able to retrieve a request to store cookies.
     * At this point, no replacements are picked. You will likely end up with less segments than configured.
-5. Generate summaries
+5. Generate summaries ([code](./src/rss-feeds-to-podcast/workflow/5-generate-summaries/generate-summaries.service.ts))
     * For the content of each article, it will generate a summary for the LLM to process.
     * It will also generate a one-line brief of each article which will be used in the intro.
-6. Generate scripts
+6. Generate scripts ([code](./src/rss-feeds-to-podcast/workflow/6-generate-scripts/generate-scripts.service.ts))
     * First, it will start generating a script for each article.
     * Then using the briefs, it will generate an introduction where the hosts will give teasers about each subject.
     * An outro is generated as well.
@@ -106,7 +111,7 @@ It does this by taking the following steps:
         * Each segment is then added. In-between each segment, the `new-segment` sfx is played, so the listener knows when a new article is discussed.
         * Finally, the outro script is played, following by the `jingle` sfx again.
     * The hosts and their personality can be configured in `.config/podcast.yml`.
-7. Generate audio
+7. Generate audio ([code](./src/rss-feeds-to-podcast/workflow/7-generate-audio/generate-audio.service.ts))
     * It will first generate an audio file for each object in `script.json` and store them in `output/audio`.
     * The following actions are taken, depending on the `type`:
       * `delay` - Using ffmpeg, a silent audio file is generated with the configured duration
@@ -121,9 +126,9 @@ All the code for these steps can be found in [src/rss-feeds-to-podcast/workflow]
 
 - **System requirements**:
   - OS: Windows, macOS, or Linux
-  - Python 3.10 or higher
-  - Minimum RAM:
-  - Disk space:
+  - Node v22
+  - Minimum RAM: 512mb
+  - Disk space: 600mb
 
 - **Dependencies**:
   - Dependencies listed in `package.json`
@@ -131,10 +136,6 @@ All the code for these steps can be found in [src/rss-feeds-to-podcast/workflow]
   - [FFmpeg](https://github.com/FFmpeg/FFmpeg)
   - [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
   - [Scrapper](https://github.com/amerkurev/scrapper)
-
-
-## Troubleshooting
-
 
 ## License
 
