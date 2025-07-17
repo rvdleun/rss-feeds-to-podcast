@@ -95,6 +95,13 @@ This webpage can serve as a player for the generated podcast.
             text-decoration: underline;
         }
 
+        .segment-origin {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: normal;
+        }
+
         .player-container {
             text-align: center;
             margin-top: 30px;
@@ -296,7 +303,7 @@ This webpage can serve as a player for the generated podcast.
         }
 
         setupAudio() {
-            this.audio = new Audio('./podcast.mp3');
+            this.audio = new Audio(`./podcast.mp3?t=${Date.now()}`);
             this.audio.addEventListener('loadedmetadata', () => {
                 this.duration = this.audio.duration;
                 this.updateTimeDisplay();
@@ -348,10 +355,11 @@ This webpage can serve as a player for the generated podcast.
                     </div>
 
                     <div class="segments">
-                        <h2>Segments</h2>
+                        <h2>Articles</h2>
                         ${this.podcastData.segments.map(segment => `
                             <div class="segment">
                                 <a href="${segment.src}" target="_blank">${segment.title}</a>
+                                ${segment.origin ? `<div class="segment-origin">${segment.origin}</div>` : ''}
                             </div>
                         `).join('')}
                     </div>

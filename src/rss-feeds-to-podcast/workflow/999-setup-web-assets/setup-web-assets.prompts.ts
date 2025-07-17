@@ -12,4 +12,6 @@ ${hosts.map(({ id, description }) => `- ${id}: ${description}`).join('\n')}
 Your task is to write a concise, engaging summary of today's episode (max 100 words). Write in a friendly and informative tone suitable for podcast listeners.
 
 The hosts discussed the following topics:
-${segments.map(({ brief }) => `- ${brief}`).join('\n')}`;
+${segments.map(({ brief }) => `- ${brief}`).join('\n')}
+
+Only return the description and nothing else.`;

@@ -38,6 +38,7 @@ export class SetupWebAssetsService {
       name: podcastConfig.name,
       description,
       segments: segments.map((segment) => ({
+        origin: segment.siteName ?? segment.origin,
         src: segment.item.src,
         title: segment.item.title,
       })),
