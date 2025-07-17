@@ -9,11 +9,17 @@ import { GenerateAudioModule } from './workflow/7-generate-audio/generate-audio.
 import { AppCommand, ConfirmationQuestion } from './app.command';
 import { AppConfigModule } from './modules/config/config.module';
 import { OutputModule } from './modules/output/output.module';
+import { LlmModule } from './modules/llm/llm.module';
+import { WebScraperModule } from './modules/web-scraper/web-scraper.module';
+import { TextToSpeechModule } from './modules/text-to-speech/text-to-speech.module';
 
 @Module({
   imports: [
     AppConfigModule,
+    LlmModule,
     OutputModule,
+    TextToSpeechModule,
+    WebScraperModule,
 
     RssFeedModule,
     SegmentPickerModule,

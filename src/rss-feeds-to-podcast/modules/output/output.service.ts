@@ -68,6 +68,10 @@ export class OutputService {
     return fileContents.map((content) => JSON.parse(content) as T);
   }
 
+  outputDirectoryExists(): boolean {
+    return existsSync(outputPath);
+  }
+
   removeSegment(segment: Segment) {
     const fullPath = join(
       this.#getOutputDirectory(),

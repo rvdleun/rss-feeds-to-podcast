@@ -15,10 +15,15 @@ import { FilterSegmentsService } from './workflow/4-filter-segments/filter-segme
 import { GenerateSummariesService } from './workflow/5-generate-summaries/generate-summaries.service';
 import { GenerateScriptsService } from './workflow/6-generate-scripts/generate-scripts.service';
 import { GenerateAudioService } from './workflow/7-generate-audio/generate-audio.service';
+import { OutputService } from './modules/output/output.service';
+import { WebScraperService } from './modules/web-scraper/web-scraper.service';
+import { LlmService } from './modules/llm/llm.service';
+import { TextToSpeechService } from './modules/text-to-speech/text-to-speech.service';
+import { execSync } from 'child_process';
 
 @Command({
-  name: 'basic',
-  description: 'A parameter parse',
+  name: 'run-workflow',
+  description: 'Runs the rss-feeds-to-podcast workflow',
   options: { isDefault: true },
 })
 export class AppCommand extends CommandRunner {
@@ -27,6 +32,10 @@ export class AppCommand extends CommandRunner {
   constructor(
     private readonly inquirer: InquirerService,
     private appConfigService: AppConfigService,
+    private llmService: LlmService,
+    private outputService: OutputService,
+    private textToSpeechService: TextToSpeechService,
+    private webScraperService: WebScraperService,
 
     private rssFeedService: RssFeedService,
     private segmentPickerService: SegmentPickerService,
@@ -42,6 +51,54 @@ export class AppCommand extends CommandRunner {
     console.log();
     console.log('Setting up rss-feeds-to-podcast...');
     console.log('----------------------------------');
+
+    if (this.outputService.outputDirectoryExists()) {
+      console.log(
+        'Output directory already exists. Please remove before starting the workflow.',
+      );
+      console.log('Aborting...');
+      return;
+    }
+
+    console.log();
+    console.log('Verifying external services');
+    console.log('---------------------------');
+    console.log();
+
+    const availableIcon = (available: boolean) =>
+      `[${available ? '✅' : '❌'}]`;
+
+    let ffmpegAvailable = false;
+    try {
+      execSync('ffmpeg -version');
+      ffmpegAvailable = true;
+    } catch {}
+    console.log(`${availableIcon(ffmpegAvailable)} FFmpeg`);
+
+    const llmAvailable = await this.llmService.isAvailable();
+    console.log(`${availableIcon(llmAvailable)} LLM`);
+    const textToSpeechAvailable = await this.textToSpeechService.isAvailable();
+    console.log(`${availableIcon(textToSpeechAvailable)} TextToSpeech`);
+    const webScraperAvailable = await this.webScraperService.isAvailable();
+    console.log(`${availableIcon(webScraperAvailable)} Webscraper`);
+    console.log();
+
+    if (
+      [
+        ffmpegAvailable,
+        llmAvailable,
+        textToSpeechAvailable,
+        webScraperAvailable,
+      ].some((available) => !available)
+    ) {
+      console.log('Not all external services are available.');
+      console.log('Aborting...');
+      return;
+    }
+
+    console.log('Retrieving configuration');
+    console.log('------------------------');
+    console.log();
 
     const { feeds } = this.appConfigService.getConfig('rss');
     const { name, behaviour, hosts, numberOfSegments } =

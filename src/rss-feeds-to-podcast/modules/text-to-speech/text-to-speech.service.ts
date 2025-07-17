@@ -35,4 +35,13 @@ export class TextToSpeechService implements OnModuleInit {
     const fileStream = createWriteStream(outputPath);
     await pipeline(response.body, fileStream);
   }
+
+  async isAvailable() {
+    try {
+      const response = await fetch(`${this.#config.href}/health`);
+      return response.ok;
+    } catch {
+      return false;
+    }
+  }
 }

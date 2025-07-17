@@ -47,4 +47,18 @@ ${prompt}`);
       this.#logger.error(error);
     }
   }
+
+  async isAvailable(): Promise<boolean> {
+    try {
+      await this.#client.chat.completions.create({
+        model: this.#config.model,
+        messages: [{ role: 'user', content: 'Hello' }],
+        max_completion_tokens: 3,
+      });
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }
