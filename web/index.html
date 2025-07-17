@@ -13,6 +13,21 @@ This webpage can serve as a player for the generated podcast.
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Podcast Player</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="A simple podcast player for your favorite tech podcasts">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Podcast Player">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
     <style>
         * {
             margin: 0;
@@ -459,6 +474,17 @@ This webpage can serve as a player for the generated podcast.
     // Initialize the podcast player when the page loads
     document.addEventListener('DOMContentLoaded', () => {
         new PodcastPlayer();
+
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+        }
     });
 </script>
 </body>
