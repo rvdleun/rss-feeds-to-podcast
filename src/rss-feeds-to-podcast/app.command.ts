@@ -47,7 +47,19 @@ export class AppCommand extends CommandRunner {
   ) {
     super();
   }
-  async run(): Promise<void> {
+
+  @Option({
+    flags: '-Y, --yes',
+    description: 'Skip confirmation prompt',
+  })
+  parseYes(): boolean {
+    return true;
+  }
+
+  async run(
+    passedParams: string[],
+    options?: { yes?: boolean },
+  ): Promise<void> {
     console.log();
     console.log('Setting up rss-feeds-to-podcast...');
     console.log('----------------------------------');
@@ -111,13 +123,15 @@ export class AppCommand extends CommandRunner {
     console.log(`- ${feeds.length} RSS feed(s) detected`);
     console.log();
 
-    const { confirmation } = await this.inquirer.ask<{ confirmation: string }>(
-      'confirmation',
-      undefined,
-    );
+    if (!options?.yes) {
+      const { confirmation } = await this.inquirer.ask<{ confirmation: string }>(
+        'confirmation',
+        undefined,
+      );
 
-    if (confirmation.toLowerCase() !== 'y') {
-      return;
+      if (confirmation.toLowerCase() !== 'y') {
+        return;
+      }
     }
 
     /* Retrieve RSS feeds */
