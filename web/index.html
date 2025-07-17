@@ -1,0 +1,457 @@
+<!--
+This webpage can serve as a player for the generated podcast.
+
+* Run `npm run start -- setup-web-assets`
+* This will generate a description of the latest podcast.
+* Next, it will move the podcast.json and podcast.mp3 in this directory.
+* Serve this directory via a web server.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-color: #ffffff;
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background: var(--bg-color);
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .description {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .segments {
+            margin-bottom: 40px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .segments h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .segment {
+            margin-bottom: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .segment:last-child {
+            border-bottom: none;
+        }
+
+        .segment a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .segment a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        .player-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .play-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+        }
+
+        .play-button:hover {
+            background: var(--primary-hover);
+            color: var(--primary-hover);
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        .play-button:active {
+            transform: scale(0.95);
+        }
+
+        .play-icon, .pause-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .play-icon {
+            border-left: 30px solid white;
+            border-top: 18px solid transparent;
+            border-bottom: 18px solid transparent;
+            margin-left: 6px;
+        }
+
+        .pause-icon {
+            width: 32px;
+            height: 32px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .pause-icon::before,
+        .pause-icon::after {
+            content: '';
+            width: 6px;
+            height: 32px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .timeline-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .timeline {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .timeline::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+        }
+
+        .timeline::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .error {
+            text-align: center;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .play-button {
+                width: 100px;
+                height: 100px;
+            }
+
+            .play-icon {
+                border-left: 16px solid white;
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="content">
+        <div class="loading">Loading podcast...</div>
+    </div>
+</div>
+
+<script>
+    class PodcastPlayer {
+        constructor() {
+            this.audio = null;
+            this.isPlaying = false;
+            this.currentTime = 0;
+            this.duration = 0;
+            this.saveInterval = null;
+            this.podcastData = null;
+            this.storageKey = 'podcast_time';
+            this.idKey = 'podcast_id';
+
+            this.init();
+        }
+
+        async init() {
+            try {
+                await this.loadPodcastData();
+                this.setupAudio();
+                this.render();
+                this.setupEventListeners();
+            } catch (error) {
+                this.showError('Failed to load podcast data');
+            }
+        }
+
+        async loadPodcastData() {
+            const cacheBuster = `?t=${Date.now()}`;
+            const response = await fetch(`./podcast.json${cacheBuster}`);
+            if (!response.ok) {
+                throw new Error('Failed to load podcast data');
+            }
+            this.podcastData = await response.json();
+            this.checkIdAndUpdateStorage();
+        }
+
+        checkIdAndUpdateStorage() {
+            const storedId = localStorage.getItem(this.idKey);
+            if (storedId !== this.podcastData.id) {
+                localStorage.removeItem(this.storageKey);
+                localStorage.setItem(this.idKey, this.podcastData.id);
+            }
+        }
+
+        setupAudio() {
+            this.audio = new Audio('./podcast.mp3');
+            this.audio.addEventListener('loadedmetadata', () => {
+                this.duration = this.audio.duration;
+                this.updateTimeDisplay();
+                this.checkStoredTime();
+            });
+            this.audio.addEventListener('timeupdate', () => {
+                this.currentTime = this.audio.currentTime;
+                this.updateTimeDisplay();
+                this.updateTimeline();
+            });
+            this.audio.addEventListener('ended', () => {
+                this.isPlaying = false;
+                this.updatePlayButton();
+                this.stopSaveInterval();
+            });
+        }
+
+        checkStoredTime() {
+            const storedTime = localStorage.getItem(this.storageKey);
+            if (storedTime) {
+                const time = parseFloat(storedTime);
+                if (!isNaN(time) && time >= 0) {
+                    this.audio.currentTime = time;
+                    this.currentTime = time;
+                    this.updateTimeDisplay();
+                    this.updateTimeline();
+                }
+            }
+        }
+
+        render() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                    <h1>${this.podcastData.name}</h1>
+                    <div class="description">${this.formatDescription(this.podcastData.description)}</div>
+
+                    <div class="player-container">
+                        <button class="play-button" id="playButton">
+                            <div class="play-icon"></div>
+                        </button>
+
+                        <div class="timeline-container">
+                            <input type="range" class="timeline" id="timeline" min="0" max="100" value="0">
+                            <div class="time-display">
+                                <span id="currentTime">0:00</span>
+                                <span id="duration">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="segments">
+                        <h2>Segments</h2>
+                        ${this.podcastData.segments.map(segment => `
+                            <div class="segment">
+                                <a href="${segment.src}" target="_blank">${segment.title}</a>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+        }
+
+        formatDescription(description) {
+            // Remove quotes and clean up the description
+            return description.replace(/^"|"$/g, '').replace(/\\n/g, '<br>');
+        }
+
+        setupEventListeners() {
+            const playButton = document.getElementById('playButton');
+            const timeline = document.getElementById('timeline');
+
+            playButton.addEventListener('click', () => this.togglePlay());
+            timeline.addEventListener('input', (e) => this.seek(e.target.value));
+        }
+
+        togglePlay() {
+            if (this.isPlaying) {
+                this.pause();
+            } else {
+                this.play();
+            }
+        }
+
+        play() {
+            this.audio.play();
+            this.isPlaying = true;
+            this.updatePlayButton();
+            this.startSaveInterval();
+        }
+
+        pause() {
+            this.audio.pause();
+            this.isPlaying = false;
+            this.updatePlayButton();
+            this.stopSaveInterval();
+        }
+
+        seek(value) {
+            const time = (value / 100) * this.duration;
+            this.audio.currentTime = time;
+            this.currentTime = time;
+        }
+
+        updatePlayButton() {
+            const playButton = document.getElementById('playButton');
+            playButton.innerHTML = this.isPlaying ?
+                '<div class="pause-icon"></div>' :
+                '<div class="play-icon"></div>';
+        }
+
+        updateTimeDisplay() {
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+
+            if (currentTimeEl) currentTimeEl.textContent = this.formatTime(this.currentTime);
+            if (durationEl) durationEl.textContent = this.formatTime(this.duration);
+        }
+
+        updateTimeline() {
+            const timeline = document.getElementById('timeline');
+            if (timeline && this.duration > 0) {
+                const progress = (this.currentTime / this.duration) * 100;
+                timeline.value = progress;
+            }
+        }
+
+        formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        startSaveInterval() {
+            this.saveInterval = setInterval(() => {
+                localStorage.setItem(this.storageKey, this.currentTime.toString());
+            }, 10000);
+        }
+
+        stopSaveInterval() {
+            if (this.saveInterval) {
+                clearInterval(this.saveInterval);
+                this.saveInterval = null;
+            }
+        }
+
+        showError(message) {
+            const content = document.getElementById('content');
+            content.innerHTML = `<div class="error">${message}</div>`;
+        }
+    }
+
+    // Initialize the podcast player when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        new PodcastPlayer();
+    });
+</script>
+</body>
+</html>

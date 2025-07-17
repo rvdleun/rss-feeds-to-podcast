@@ -12,6 +12,7 @@ import { OutputModule } from './modules/output/output.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { WebScraperModule } from './modules/web-scraper/web-scraper.module';
 import { TextToSpeechModule } from './modules/text-to-speech/text-to-speech.module';
+import { SetupWebAssetsModule } from './workflow/999-setup-web-assets/setup-web-assets.module';
 
 @Module({
   imports: [
@@ -28,6 +29,8 @@ import { TextToSpeechModule } from './modules/text-to-speech/text-to-speech.modu
     GenerateSummariesModule,
     GenerateScriptsModule,
     GenerateAudioModule,
+
+    SetupWebAssetsModule,
   ],
   providers: [AppCommand, ConfirmationQuestion],
 })
