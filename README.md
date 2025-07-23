@@ -131,7 +131,7 @@ All the code for these steps can be found in [src/rss-feeds-to-podcast/workflow]
 - **System requirements**:
   - OS: Windows, macOS, or Linux
   - Node v22
-  - Minimum RAM: 512mb
+  - Minimum RAM: 6GB
   - Disk space: 600mb
 
 - **Dependencies**:
