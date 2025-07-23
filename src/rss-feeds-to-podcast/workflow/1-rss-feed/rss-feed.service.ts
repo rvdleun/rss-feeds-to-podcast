@@ -28,14 +28,32 @@ export class RssFeedService {
     }
 
     for (let i = 0; i < feeds.length; i++) {
-      await this.#storeItems(feeds[i], maxAgeHours);
+      try {
+        if (feeds[i].disabled) {
+          this.#logger.warn(`Skipping disabled feed ${feeds[i].title}`);
+          continue;
+        }
+
+        await this.#storeItems(feeds[i], maxAgeHours);
+      } catch (e) {
+        this.#logger.error(
+          `Something went wrong while fetching the feed: ${e.message}`,
+        );
+      }
     }
   }
 
   async #storeItems({ src, title }: RssFeed, maxAgeHours?: number) {
     this.#logger.log(`Fetching RSS Feed from ${src}`);
 
-    const feed = await this.#parser.parseURL(src);
+    const request = await fetch(src);
+    if (!request.ok) {
+      throw new Error(`Request to ${src} failed`);
+    }
+
+    const xml = await request.text();
+
+    const feed = await this.#parser.parseString(xml);
     const key = slugify(feed.title, { lower: true, strict: true });
     const { items } = feed;
 

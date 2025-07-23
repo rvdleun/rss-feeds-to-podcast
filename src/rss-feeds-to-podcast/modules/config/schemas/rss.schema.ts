@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const RssFeedSchema = z.object({
+  disabled: z.boolean().optional(),
   src: z.string().url('RSS feed src must be a valid URL'),
   title: z.string().optional(),
 });
