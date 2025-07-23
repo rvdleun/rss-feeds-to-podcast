@@ -135,11 +135,13 @@ All the code for these steps can be found in [src/rss-feeds-to-podcast/workflow]
   - Disk space: 600mb
 
 - **Dependencies**:
-  - Dependencies listed in `package.json`
-  - A LLM service which supports the [OpenAI API standards](https://platform.openai.com/docs/api-reference/introduction)
+  - [Node.js](https://github.com/nvm-sh/nvm) (version defined in `.nvmrc`)
+    - Dependencies listed in `package.json`
   - [FFmpeg](https://github.com/FFmpeg/FFmpeg)
-  - [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
-  - [Scrapper](https://github.com/amerkurev/scrapper)
+  - Docker & Docker Compose for running external services (no need to install these services manually, as Docker will take care of that):
+    - [Ollama](https://ollama.com/) (or you can use another LLM service, provided it supports the [OpenAI API standards](https://platform.openai.com/docs/api-reference/introduction))
+    - [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
+    - [Scrapper](https://github.com/amerkurev/scrapper)
 
 ## License
 
