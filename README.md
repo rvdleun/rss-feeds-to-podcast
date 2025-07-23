@@ -55,6 +55,10 @@ Setup the external services in `.config/external-services.yaml`. There are docke
 Edit `.config/rss.yaml` and add your favorite feeds.
 
 Start all external services via docker.
+```bash
+cd external-services
+docker compose -f kokoro-api/docker-compose.yml -f scrapper/docker-compose.yml -f ollama/docker-compose.yml up -d
+```
 
 Make sure that you have ffmpeg installed.
 ```bash
