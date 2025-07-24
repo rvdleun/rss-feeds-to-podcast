@@ -12,7 +12,7 @@
 
 <div align="center">
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+[![NodeJS](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)](#)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![](https://dcbadge.limes.pink/api/server/YuMNeuKStr?style=flat)](https://discord.gg/YuMNeuKStr) <br>
 [![Docs](https://github.com/rvdleun/rss-feeds-to-podcast/actions/workflows/docs.yaml/badge.svg)](https://github.com/rvdleun/rss-feeds-to-podcast/actions/workflows/docs.yaml/)
@@ -55,6 +55,10 @@ Setup the external services in `.config/external-services.yaml`. There are docke
 Edit `.config/rss.yaml` and add your favorite feeds.
 
 Start all external services via docker.
+```bash
+cd external-services
+docker compose -f kokoro-api/docker-compose.yml -f scrapper/docker-compose.yml -f ollama/docker-compose.yml up -d
+```
 
 Make sure that you have ffmpeg installed.
 ```bash
@@ -127,15 +131,17 @@ All the code for these steps can be found in [src/rss-feeds-to-podcast/workflow]
 - **System requirements**:
   - OS: Windows, macOS, or Linux
   - Node v22
-  - Minimum RAM: 512mb
+  - Minimum RAM: 6GB
   - Disk space: 600mb
 
 - **Dependencies**:
-  - Dependencies listed in `package.json`
-  - A LLM service which supports the [OpenAI API standards](https://platform.openai.com/docs/api-reference/introduction)
+  - [Node.js](https://github.com/nvm-sh/nvm) (version defined in `.nvmrc`)
+    - Dependencies listed in `package.json`
   - [FFmpeg](https://github.com/FFmpeg/FFmpeg)
-  - [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
-  - [Scrapper](https://github.com/amerkurev/scrapper)
+  - Docker & Docker Compose for running external services (no need to install these services manually, as Docker will take care of that):
+    - [Ollama](https://ollama.com/) (or you can use another LLM service, provided it supports the [OpenAI API standards](https://platform.openai.com/docs/api-reference/introduction))
+    - [Kokoro-FastAPI](https://github.com/remsky/Kokoro-FastAPI)
+    - [Scrapper](https://github.com/amerkurev/scrapper)
 
 ## License
 
