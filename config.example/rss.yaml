@@ -1,4 +1,5 @@
-maxAgeHours: 24
+# Uncomment if the articles shouldn't be older than 24 hours
+# maxAgeHours: 24
 feeds:
   - src: "https://blog.mozilla.ai/rss/"
   - src: "https://blog.mozilla.org/en/feed/"

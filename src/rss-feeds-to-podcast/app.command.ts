@@ -124,10 +124,9 @@ export class AppCommand extends CommandRunner {
     console.log();
 
     if (!options?.yes) {
-      const { confirmation } = await this.inquirer.ask<{ confirmation: string }>(
-        'confirmation',
-        undefined,
-      );
+      const { confirmation } = await this.inquirer.ask<{
+        confirmation: string;
+      }>('confirmation', undefined);
 
       if (confirmation.toLowerCase() !== 'y') {
         return;
@@ -138,7 +137,12 @@ export class AppCommand extends CommandRunner {
     await this.rssFeedService.fetchRssFeeds();
 
     /* Pick X number of articles from the feeds */
-    await this.segmentPickerService.createSegments();
+    if (!(await this.segmentPickerService.createSegments())) {
+      this.#logger.log(
+        'Something went wrong while creating segments. Aborting...',
+      );
+      return;
+    }
 
     /* Use scrapper to retrieve the content from each article */
     await this.contentScraperService.scrapeContentFromSegments();
@@ -152,7 +156,12 @@ export class AppCommand extends CommandRunner {
     await this.filterSegmentsService.filter();
 
     /* Generate a summary and a one-line brief of each article for the LLM */
-    await this.generateSummariesService.generateSummaries();
+    if (!(await this.generateSummariesService.generateSummaries())) {
+      this.#logger.log(
+        'Something went wrong while generating summaries. Aborting...',
+      );
+      return;
+    }
 
     /* Generate a script for each segment based on the summaries */
     await this.generateScriptsService.generateSegmentScripts();

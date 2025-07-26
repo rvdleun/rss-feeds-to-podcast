@@ -22,13 +22,28 @@ export class SegmentPickerService {
       this.outputService.getDataFromDirectory<RssFeedData>('rss-feeds');
 
     if (rssFeeds.length === 0) {
-      this.#logger.warn('No RSS Feeds found. Run "retrieve-rss-feeds" first');
+      this.#logger.error('No RSS Feeds found.');
+      return;
+    }
+
+    const articles = rssFeeds.flatMap((feed) => feed.items);
+    if (articles.length === 0) {
+      this.#logger.error(
+        'No articles found. Make sure your RSS feeds are valid and have articles within the configured time range.',
+      );
       return;
     }
 
     let segmentsLeft =
       this.appConfigService.getConfig('podcast').numberOfSegments;
     const segments: Segment[] = [];
+
+    if (segmentsLeft > articles.length) {
+      this.#logger.warn(
+        `Not enough articles to create all segments. Reducing the podcast to ${articles.length} segments`,
+      );
+      segmentsLeft = articles.length;
+    }
 
     while (segmentsLeft > 0) {
       this.#logger.log(`Creating segment ${segments.length + 1}`);
@@ -67,5 +82,6 @@ export class SegmentPickerService {
     }
 
     this.#logger.log('Segments picked.');
+    return true;
   }
 }
