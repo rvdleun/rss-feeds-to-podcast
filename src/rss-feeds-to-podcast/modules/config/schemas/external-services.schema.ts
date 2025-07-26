@@ -1,16 +1,7 @@
 import { z } from 'zod';
 
 export const ExternalServicesSchema = z.object({
-  llm: z.object({
-    apiKey: z.string(),
-    model: z.string(),
-
-    baseURL: z.string().optional(),
-    max_tokens: z.number().optional(),
-    max_thinking_tokens: z.number().optional(),
-    temperature: z.number().optional(),
-    think: z.boolean().optional(),
-  }),
+  llm: z.any(),
   textToSpeech: z.object({
     href: z.string(),
   }),

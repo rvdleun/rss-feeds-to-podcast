@@ -3,5 +3,3 @@
 feeds:
   - src: "https://blog.mozilla.ai/rss/"
   - src: "https://blog.mozilla.org/en/feed/"
-  - src: "https://hnrss.org/frontpage"
-    title: "Hacker News"

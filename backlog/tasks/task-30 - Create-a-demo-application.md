@@ -1,7 +1,7 @@
 ---
 id: task-30
 title: Create a demo application
-status: In Progress
+status: Done
 assignee: []
 created_date: '2025-07-26'
 updated_date: '2025-07-26'

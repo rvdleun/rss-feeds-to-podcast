@@ -19,7 +19,21 @@ import { OutputService } from './modules/output/output.service';
 import { WebScraperService } from './modules/web-scraper/web-scraper.service';
 import { LlmService } from './modules/llm/llm.service';
 import { TextToSpeechService } from './modules/text-to-speech/text-to-speech.service';
-import { execSync } from 'child_process';
+import { AppService } from './app.service';
+
+@Command({
+  name: 'verify-external-services',
+  description: 'Verifies if all external services are available',
+})
+export class VerifyExternalServicesCommand extends CommandRunner {
+  constructor(private appService: AppService) {
+    super();
+  }
+
+  async run() {
+    this.appService.verifyExternalServices();
+  }
+}
 
 @Command({
   name: 'run-workflow',
@@ -32,6 +46,7 @@ export class AppCommand extends CommandRunner {
   constructor(
     private readonly inquirer: InquirerService,
     private appConfigService: AppConfigService,
+    private appService: AppService,
     private llmService: LlmService,
     private outputService: OutputService,
     private textToSpeechService: TextToSpeechService,
@@ -60,68 +75,38 @@ export class AppCommand extends CommandRunner {
     passedParams: string[],
     options?: { yes?: boolean },
   ): Promise<void> {
-    console.log();
-    console.log('Setting up rss-feeds-to-podcast...');
-    console.log('----------------------------------');
+    this.#logger.log('');
+    this.#logger.log('Setting up rss-feeds-to-podcast...');
+    this.#logger.log('----------------------------------');
 
     if (this.outputService.outputDirectoryExists()) {
-      console.log(
+      this.#logger.log(
         'Output directory already exists. Please remove before starting the workflow.',
       );
-      console.log('Aborting...');
+      this.#logger.log('Aborting...');
       return;
     }
 
-    console.log();
-    console.log('Verifying external services');
-    console.log('---------------------------');
-    console.log();
-
-    const availableIcon = (available: boolean) =>
-      `[${available ? '✅' : '❌'}]`;
-
-    let ffmpegAvailable = false;
-    try {
-      execSync('ffmpeg -version');
-      ffmpegAvailable = true;
-    } catch {}
-    console.log(`${availableIcon(ffmpegAvailable)} FFmpeg`);
-
-    const llmAvailable = await this.llmService.isAvailable();
-    console.log(`${availableIcon(llmAvailable)} LLM`);
-    const textToSpeechAvailable = await this.textToSpeechService.isAvailable();
-    console.log(`${availableIcon(textToSpeechAvailable)} TextToSpeech`);
-    const webScraperAvailable = await this.webScraperService.isAvailable();
-    console.log(`${availableIcon(webScraperAvailable)} Webscraper`);
-    console.log();
-
-    if (
-      [
-        ffmpegAvailable,
-        llmAvailable,
-        textToSpeechAvailable,
-        webScraperAvailable,
-      ].some((available) => !available)
-    ) {
-      console.log('Not all external services are available.');
-      console.log('Aborting...');
+    if (!(await this.appService.verifyExternalServices())) {
+      this.#logger.log('Not all external services are available.');
+      this.#logger.log('Aborting...');
       return;
     }
 
-    console.log('Retrieving configuration');
-    console.log('------------------------');
-    console.log();
+    this.#logger.log('Retrieving configuration');
+    this.#logger.log('------------------------');
+    this.#logger.log('');
 
     const { feeds } = this.appConfigService.getConfig('rss');
     const { name, behaviour, hosts, numberOfSegments } =
       this.appConfigService.getConfig('podcast');
 
-    console.log(`- Podcast name: ${name}`);
-    console.log(`- Number of segments: ${numberOfSegments}`);
-    console.log(`- Hosts: ${hosts.map(({ id }) => id).join(', ')}`);
-    console.log(`- Behaviour: ${behaviour}`);
-    console.log(`- ${feeds.length} RSS feed(s) detected`);
-    console.log();
+    this.#logger.log(`- Podcast name: ${name}`);
+    this.#logger.log(`- Number of segments: ${numberOfSegments}`);
+    this.#logger.log(`- Hosts: ${hosts.map(({ id }) => id).join(', ')}`);
+    this.#logger.log(`- Behaviour: ${behaviour}`);
+    this.#logger.log(`- ${feeds.length} RSS feed(s) detected`);
+    this.#logger.log('');
 
     if (!options?.yes) {
       const { confirmation } = await this.inquirer.ask<{
