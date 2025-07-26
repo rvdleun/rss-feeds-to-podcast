@@ -6,7 +6,7 @@ This Blueprint is designed to be flexible and easily adaptable to your specific 
 
 ## ⚙️ Configuration
 
-After copying `.config.example` to `.config`, you can update the following settings:
+After copying `config.example` to `config`, you can update the following settings:
 
 ### external-services.yaml
 

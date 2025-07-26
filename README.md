@@ -44,15 +44,15 @@ Install the dependencies
 npm install
 ```
 
-Copy `.config.example` to `.config`
+Copy `config.example` to `config`
 
 ```bash
-cp -r .config.example .config
+cp -r config.example config
 ```
 
-Setup the external services in `.config/external-services.yaml`. There are docker-compose files in the [external-services](./external-services) directory to start them locally if you don't have one available.
+Setup the external services in `config/external-services.yaml`. There are docker-compose files in the [external-services](./external-services) directory to start them locally if you don't have one available.
 
-Edit `.config/rss.yaml` and add your favorite feeds.
+Edit `config/rss.yaml` and add your favorite feeds.
 
 Start all external services via docker.
 
@@ -80,11 +80,11 @@ It does this by taking the following steps:
 
 1. Gather RSS Feeds ([code](./src/rss-feeds-to-podcast/workflow/1-rss-feed/rss-feed.service.ts))
     * All the configured RSS feeds are retrieved and stored in `output/rss-feeds`
-    * These can be configured in `.config/rss.yml`
+    * These can be configured in `config/rss.yml`
 2. Select articles for discussion ([code](./src/rss-feeds-to-podcast/workflow/2-segment-picker/segment-picker.service.ts))
     * At random, it will pick a number of articles from the RSS feeds.
     * There is no further logic here yet. It will be completely at random.
-    * The number of segments can be configured in `.config/podcast.yml` as `numberOfSegments`.
+    * The number of segments can be configured in `config/podcast.yml` as `numberOfSegments`.
     * The data for each selected article is stored in `output/segments`. These files will be updated throughout the pipeline.
 3. Scrape content ([code](./src/rss-feeds-to-podcast/workflow/3-content-scraper/content-scraper.service.ts))
     * Using [Scrapper](https://github.com/amerkurev/scrapper), the contents of each article are retrieved.
@@ -104,19 +104,19 @@ It does this by taking the following steps:
       * The script will consist of the following types:
         * `delay` - A pause between audio
         * `host-speak` - A line which one of the hosts will say
-        * `sfx` - An audio file to play. These can be found in `.config/assets`.
+        * `sfx` - An audio file to play. These can be found in `config/assets`.
       * The general output is:
         * It will first play the `jingle` sfx.
         * The intro script is played out
         * Each segment is then added. In-between each segment, the `new-segment` sfx is played, so the listener knows when a new article is discussed.
         * Finally, the outro script is played, following by the `jingle` sfx again.
-    * The hosts and their personality can be configured in `.config/podcast.yml`.
+    * The hosts and their personality can be configured in `config/podcast.yml`.
 7. Generate audio ([code](./src/rss-feeds-to-podcast/workflow/7-generate-audio/generate-audio.service.ts))
     * It will first generate an audio file for each object in `script.json` and store them in `output/audio`.
     * The following actions are taken, depending on the `type`:
       * `delay` - Using ffmpeg, a silent audio file is generated with the configured duration
       * `host-speaks` - An audio file is generated with the host's line.
-      * `sfx` - The audio file from `.config/assets` is copied.
+      * `sfx` - The audio file from `config/assets` is copied.
     * A `concat-list.txt` is generated, containing all the files in `output/audio`.
     * Ffmpeg is using to merge all the audio files together. The end result is stored in `output/podcast.mp3`.
 

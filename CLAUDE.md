@@ -39,7 +39,7 @@ This is a **NestJS CLI application** that converts RSS feeds to podcast episodes
   - `types/` - TypeScript type definitions
   - `utils/` - Utility functions
 - `backlog/` - Task management system with markdown-based tasks
-- `.config/` - YAML configuration files (copy from `.config.example/`)
+- `config/` - YAML configuration files (copy from `config.example/`)
 - `output/` - Generated podcast files and intermediate data
 - `external-services/` - Docker compose files for external dependencies
 
