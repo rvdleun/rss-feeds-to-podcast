@@ -58,6 +58,7 @@ ${prompt}`);
 
       return true;
     } catch (error) {
+      this.#logger.error(error);
       return false;
     }
   }

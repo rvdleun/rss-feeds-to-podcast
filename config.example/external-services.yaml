@@ -5,7 +5,7 @@ llm:
   apiKey: 'ollama'
   service: 'ollama'
   baseURL: 'http://localhost:2401/v1'
-  model: 'llama3.1:8b'
+  model: 'llama3.2:3b'  # At least an 8b model, like llama3.1:8b, is recommended
 
 textToSpeech:
   href: "http://localhost:2400"

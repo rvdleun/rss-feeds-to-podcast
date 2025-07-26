@@ -2,7 +2,9 @@ behaviour: The hosts have an amicable relationship and enjoy lively, engaging di
 hosts:
   - id: julian-styles
     description: "Julian Styles. Personality: Tech-savvy, Confident, Witty, Perfectionist, Laid-Back"
+    voice: am_liam
   - id: phoebe-morales
     description: "Phoebe Morales. Personality: Curious, Empathetic, Opinionated, Creative, Sarcastic"
+    voice: bf_lily
 name: From the Cluster
-numberOfSegments: 15
+numberOfSegments: 5   # The number of articles that will be discussed

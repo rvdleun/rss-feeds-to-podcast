@@ -1,4 +1,4 @@
-name: rss-feeds-to-podcast-development
+name: rss-feeds-to-podcast
 services:
   scrapper:
     ports:
