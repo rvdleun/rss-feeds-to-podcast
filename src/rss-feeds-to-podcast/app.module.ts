@@ -6,13 +6,18 @@ import { GenerateSummariesModule } from './workflow/5-generate-summaries/generat
 import { FilterSegmentsModule } from './workflow/4-filter-segments/filter-segments.module';
 import { GenerateScriptsModule } from './workflow/6-generate-scripts/generate-scripts.module';
 import { GenerateAudioModule } from './workflow/7-generate-audio/generate-audio.module';
-import { AppCommand, ConfirmationQuestion } from './app.command';
+import {
+  AppCommand,
+  ConfirmationQuestion,
+  VerifyExternalServicesCommand,
+} from './app.command';
 import { AppConfigModule } from './modules/config/config.module';
 import { OutputModule } from './modules/output/output.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { WebScraperModule } from './modules/web-scraper/web-scraper.module';
 import { TextToSpeechModule } from './modules/text-to-speech/text-to-speech.module';
 import { SetupWebAssetsModule } from './workflow/999-setup-web-assets/setup-web-assets.module';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -32,6 +37,11 @@ import { SetupWebAssetsModule } from './workflow/999-setup-web-assets/setup-web-
 
     SetupWebAssetsModule,
   ],
-  providers: [AppCommand, ConfirmationQuestion],
+  providers: [
+    VerifyExternalServicesCommand,
+    AppCommand,
+    AppService,
+    ConfirmationQuestion,
+  ],
 })
 export class AppModule {}

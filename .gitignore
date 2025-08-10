@@ -404,7 +404,7 @@ lancedb
 public
 
 # Blueprint-related files
-.config/
+config/
 /output/
 web/podcast.mp3
 web/podcast.json

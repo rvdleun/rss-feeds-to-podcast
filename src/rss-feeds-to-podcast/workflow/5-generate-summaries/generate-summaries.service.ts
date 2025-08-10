@@ -25,9 +25,7 @@ export class GenerateSummariesService {
       this.outputService.getDataFromDirectory<Segment>('segments');
 
     if (segments.length === 0) {
-      this.#logger.warn(
-        'No segments found. Run "create-segments" and "scrape-content" first',
-      );
+      this.#logger.error('No segments found.');
       return;
     }
 
@@ -67,5 +65,6 @@ export class GenerateSummariesService {
     }
 
     this.#logger.log('Summaries generated.');
+    return true;
   }
 }

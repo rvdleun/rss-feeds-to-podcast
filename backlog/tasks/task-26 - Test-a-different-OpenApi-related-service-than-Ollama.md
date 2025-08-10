@@ -1,9 +1,9 @@
 ---
-id: task-23
-title: Setup Github Workspace
+id: task-26
+title: Test a different OpenApi-related service than Ollama
 status: Done
 assignee: []
-created_date: '2025-07-17'
+created_date: '2025-07-23'
 updated_date: '2025-07-26'
 labels: []
 dependencies: []

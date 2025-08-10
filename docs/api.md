@@ -17,7 +17,7 @@ npm run start -- retrieve-rss-feeds
 - Each feed generates a separate JSON file with article metadata
 
 **Configuration:**
-- RSS feeds configured in `.config/rss.yaml`
+- RSS feeds configured in `config/rss.yaml`
 - Respects `maxAgeHours` setting for article freshness
 
 ---
@@ -217,7 +217,7 @@ npm run start -- generate-audio
 
 **Audio Generation:**
 - `host-speak`: Generated using TTS with host voice profiles
-- `sfx`: Copied from `.config/assets/` directory
+- `sfx`: Copied from `config/assets/` directory
 - `delay`: Silent audio files created with specified duration
 
 **Output:**
@@ -227,7 +227,7 @@ npm run start -- generate-audio
 **Configuration:**
 - TTS service configured in `external-services.yaml`
 - Host voice mappings in `podcast.yaml`
-- Sound effect files in `.config/assets/`
+- Sound effect files in `config/assets/`
 
 ---
 

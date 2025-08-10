@@ -9,15 +9,15 @@ import { ExternalServicesSchema } from './schemas/external-services.schema';
 
 const logger = new Logger('ConfigLoader');
 
-const expectedConfigPath = join(process.cwd(), '.config');
-const exampleConfigPath = join(process.cwd(), '.config.example');
+const expectedConfigPath = join(process.cwd(), 'config');
+const exampleConfigPath = join(process.cwd(), 'config.example');
 
 export let configPath: string;
 
 if (existsSync(expectedConfigPath)) {
   configPath = expectedConfigPath;
 } else if (existsSync(exampleConfigPath)) {
-  logger.warn(`.config directory not found. Using .config.example instead.`);
+  logger.warn(`config directory not found. Using config.example instead.`);
   configPath = exampleConfigPath;
 }
 

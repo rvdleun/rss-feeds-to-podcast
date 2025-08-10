@@ -44,13 +44,13 @@ Having a diverse pool of articles ensures that your podcast can cover a wide ran
 ### ⚙️ **Key Components in this Step**
 
 **1 - RSS Feed Configuration**
-- All RSS feeds are configured in `.config/rss.yml`
+- All RSS feeds are configured in `config/rss.yml`
 - Supports multiple feed URLs to diversify content sources
 
 ### 🔍 **Configuration Example**
 
 ```yaml
-# .config/rss.yml
+# config/rss.yml
 feeds:
   - url: "https://example.com/rss"
     name: "Example News"
@@ -76,14 +76,14 @@ In this step, the system randomly selects a subset of articles from the gathered
 - The selection is purely based on chance to ensure variety
 
 **2 - Segment Configuration**
-- The number of articles to select is configured in `.config/podcast.yml` as `numberOfSegments`
+- The number of articles to select is configured in `config/podcast.yml` as `numberOfSegments`
 - Each selected article becomes a potential podcast segment
 - Selected article data is stored in `output/segments` for further processing
 
 ### 🔍 **Configuration Example**
 
 ```yaml
-# .config/podcast.yml
+# config/podcast.yml
 numberOfSegments: 15
 ```
 
@@ -239,7 +239,7 @@ The final script consists of different object types:
 
 - **`delay`**: Pauses between audio segments
 - **`host-speak`**: Dialogue lines for specific hosts
-- **`sfx`**: Sound effects and audio files from `.config/assets`
+- **`sfx`**: Sound effects and audio files from `config/assets`
 
 **General Output Flow:**
 1. `jingle` sound effect
@@ -251,7 +251,7 @@ The final script consists of different object types:
 ### 🔍 **Host Configuration**
 
 ```yaml
-# .config/podcast.yml
+# config/podcast.yml
 hosts:
   - name: "Alex"
     personality: "Enthusiastic and analytical, asks probing questions"
@@ -283,7 +283,7 @@ The final step converts the generated script into audio format, creating individ
 **2 - Audio Processing by Type**
 - **`delay`**: Uses ffmpeg to generate silent audio files with specified duration
 - **`host-speak`**: Text-to-speech generation with host-specific voice profiles
-- **`sfx`**: Copies pre-recorded audio files from `.config/assets`
+- **`sfx`**: Copies pre-recorded audio files from `config/assets`
 
 **3 - Audio Compilation**
 - Generates `concat-list.txt` containing all audio files in sequence

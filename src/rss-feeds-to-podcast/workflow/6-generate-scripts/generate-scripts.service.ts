@@ -102,11 +102,10 @@ export class GenerateScriptsService {
       this.outputService.getDataFromDirectory<Segment>('segments');
     const briefs = segments.map((segment) => segment.brief);
 
-    const result = await this.llmService.generateText(
+    const result = await this.#generateScript(
       type === 'intro'
         ? generateIntroScriptPrompt(briefs, config)
         : generateOutroScriptPrompt(briefs, config),
-      this.#getScriptSchema(),
     );
     this.outputService.generateFile(
       'intro-outtro',
@@ -131,9 +130,8 @@ export class GenerateScriptsService {
         `Generating script for segment ${generateSegmentDescription(segment)}`,
       );
 
-      segment.script = await this.llmService.generateText<SegmentScriptItem[]>(
+      segment.script = await this.#generateScript(
         generateSegmentScriptPrompt(segment, config),
-        this.#getScriptSchema(),
       );
 
       if (!segment.script) {
@@ -147,17 +145,32 @@ export class GenerateScriptsService {
     }
   }
 
+  async #generateScript(prompt: string) {
+    const request = await this.llmService.generateText<{
+      result?: SegmentScriptItem[];
+    }>(prompt, this.#getScriptSchema());
+
+    if (!request.result) {
+      this.#logger.error('No result from LLM');
+      throw new Error('No result from LLM');
+    }
+
+    return request.result;
+  }
+
   #getScriptSchema() {
     const config = this.appConfigService.getConfig('podcast');
     const hostIds = config.hosts.map(({ id }) => id);
 
-    return z.array(
-      z.object({
-        // @ts-ignore
-        host: z.enum(hostIds),
-        content: z.string(),
-      }),
-    );
+    return z.object({
+      result: z.array(
+        z.object({
+          // @ts-ignore
+          host: z.enum(hostIds),
+          content: z.string(),
+        }),
+      ),
+    });
   }
 
   #segmentScriptItem(items: SegmentScriptItem[]): ScriptItem[] {
