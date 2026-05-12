@@ -16,7 +16,7 @@ export class GenerateSegmentScriptsCommand extends CommandRunner {
 }
 
 @Command({
-  name: 'generate-intro-output-scripts',
+  name: 'generate-intro-outro-scripts',
   description: 'Generates scripts for the intro and outro',
 })
 export class GenerateIntroOutroScriptsCommand extends CommandRunner {

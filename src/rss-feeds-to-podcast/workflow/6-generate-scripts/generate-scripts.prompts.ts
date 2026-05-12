@@ -1,16 +1,16 @@
 import { Segment } from '../../types/segment';
-import { PodcastConfig } from '../../modules/config/schemas/podcast.schema';
+import {
+  PodcastConfig,
+  PodcastHostConfig,
+  PodcastHostSchema,
+} from '../../modules/config/schemas/podcast.schema';
 
 export const generateIntroScriptPrompt = (
   briefs: string[],
-  { behaviour, hosts, name }: PodcastConfig,
+  { behaviour, name }: PodcastConfig,
+  host: PodcastHostConfig,
 ) => `
-You are generating a podcast conversation segment between two hosts discussing a single article. Create natural, engaging dialogue that flows conversationally.
-
-# Hosts
-${hosts.map((host) => `- ${host.id}: ${host.description}`).join('\n')}
-
-${behaviour}
+You are generating a podcast conversation intro for a single host. Create a natural, engaging sentence.
 
 # Today's Topics
 ${briefs.map((brief) => `- ${brief}\n`)}
@@ -19,7 +19,7 @@ ${briefs.map((brief) => `- ${brief}\n`)}
 
 ## Core Elements (Must Include)
 - Welcome the audience to "${name}"
-- Briefly preview today's topics without revealing order
+- Briefly preview 1-3 topics without revealing order
 - Create anticipation for the upcoming discussions
 - Keep tone friendly, informal, and engaging
 
@@ -31,25 +31,14 @@ ${briefs.map((brief) => `- ${brief}\n`)}
 - Calls to action or audience instructions
 
 ## Structure & Length
-- **4-6 total exchanges** (2-3 turns per host)
-- **1-3 sentences per exchange**
-- Either host can open the show
-- End naturally without transitioning to main content
+- **1 sentence**
 
 ## Tone Examples
 Use natural podcast opening language like:
 - "Welcome back to ${name}!"
-- "Great to be here with some interesting stories today"
-- "Looking forward to diving into these topics"
 
 # Required Output Format
-
-Return ONLY valid JSON:
-
-[
-  { "host": "styles", "content": "..." },
-  { "host": "phoebe", "content": "..." }
-]
+Return ONLY the intro sentence. No other text.
 
 Generate a natural, welcoming introduction now.`;
 

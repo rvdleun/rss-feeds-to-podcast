@@ -17,6 +17,7 @@ import {
   ScriptItem,
   ScriptSfxItem,
 } from './generate-scripts.types';
+import { PodcastConfig } from '../../modules/config/schemas/podcast.schema';
 
 type IntroOutroType = 'intro' | 'outro';
 
@@ -33,7 +34,17 @@ export class GenerateScriptsService {
   async generateFinalScript() {
     this.#logger.log('Generating final script');
 
-    const script: ScriptItem[] = [
+    const script: ScriptItem[] = [];
+
+    const intro = this.outputService.getContent<SegmentScriptItem[]>(
+      'intro-outtro',
+      'intro.json',
+    );
+    script.push(...[
+      {
+        type: 'delay',
+        duration: 100 + Math.floor(Math.random() * 300),
+      } as ScriptDelayItem,...this.#segmentScriptItem(intro),
       {
         type: 'sfx',
         src: 'jingle',
@@ -42,13 +53,7 @@ export class GenerateScriptsService {
         type: 'delay',
         duration: 1000,
       } as ScriptDelayItem,
-    ];
-
-    const intro = this.outputService.getContent<SegmentScriptItem[]>(
-      'intro-outtro',
-      'intro.json',
-    );
-    script.push(...this.#segmentScriptItem(intro));
+    ]);
     script.push({
       type: 'sfx',
       src: 'new-segment',
@@ -102,18 +107,11 @@ export class GenerateScriptsService {
       this.outputService.getDataFromDirectory<Segment>('segments');
     const briefs = segments.map((segment) => segment.brief);
 
-    const result = await this.#generateScript(
-      type === 'intro'
-        ? generateIntroScriptPrompt(briefs, config)
-        : generateOutroScriptPrompt(briefs, config),
-    );
-    this.outputService.generateFile(
-      'intro-outtro',
-      `${type}.json`,
-      JSON.stringify(result, null, 2),
-    );
-
-    this.#logger.log(`Script for ${type} generated.`);
+    if (type === 'intro') {
+      await this.#generateIntroScript(briefs, config);
+    } else {
+      await this.#generateOutroScript(briefs, config);
+    }
   }
 
   async generateSegmentScripts() {
@@ -143,6 +141,32 @@ export class GenerateScriptsService {
       this.#logger.log(DIVIDER);
       this.outputService.saveSegment(segment);
     }
+  }
+
+  async #generateIntroScript(briefs: string[], config: PodcastConfig) {
+    const host = config.hosts.sort(() => Math.random() - 0.5)[0];
+    const prompt = generateIntroScriptPrompt(briefs, config, host);
+    const content = await this.llmService.generateText(prompt);
+    this.outputService.generateFile(
+      'intro-outtro',
+      `intro.json`,
+      JSON.stringify([{ host: host.id, content}], null, 2),
+    );
+
+    this.#logger.log(`Script for intro generated.`);
+  }
+
+  async #generateOutroScript(briefs: string[], config: PodcastConfig) {
+    const result = await this.#generateScript(
+      generateOutroScriptPrompt(briefs, config),
+    );
+    this.outputService.generateFile(
+      'intro-outtro',
+      `outro.json`,
+      JSON.stringify(result, null, 2),
+    );
+
+    this.#logger.log(`Script for outro generated.`);
   }
 
   async #generateScript(prompt: string) {
