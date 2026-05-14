@@ -47,10 +47,7 @@ export class AppCommand extends CommandRunner {
     private readonly inquirer: InquirerService,
     private appConfigService: AppConfigService,
     private appService: AppService,
-    private llmService: LlmService,
     private outputService: OutputService,
-    private textToSpeechService: TextToSpeechService,
-    private webScraperService: WebScraperService,
 
     private rssFeedService: RssFeedService,
     private segmentPickerService: SegmentPickerService,

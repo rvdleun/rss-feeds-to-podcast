@@ -4,6 +4,7 @@ export const ExternalServicesSchema = z.object({
   llm: z.any(),
   textToSpeech: z.object({
     href: z.string(),
+    provider: z.enum(['chatterbox', 'kokoro'])
   }),
   webScraper: z.object({
     cache: z.boolean(),

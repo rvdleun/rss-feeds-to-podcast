@@ -2,46 +2,38 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { AppConfigService } from '../config/config.service';
-import { AppConfig } from '../config/config.types';
+import { ProviderService } from './providers/provider.service';
+import { KokoroService } from './providers/kokoro.service';
+import { ChatterboxService } from './providers/chatterbox.service';
 
 @Injectable()
 export class TextToSpeechService implements OnModuleInit {
-  #config: AppConfig['externalServices']['textToSpeech'];
+  #providerService: ProviderService;
 
   constructor(private appConfigService: AppConfigService) {}
 
   onModuleInit() {
-    this.#config =
-      this.appConfigService.getConfig('externalServices').textToSpeech;
+    const config = this.appConfigService.getConfig('externalServices').textToSpeech;
+
+    switch (config.provider) {
+      case 'chatterbox':
+        this.#providerService = new ChatterboxService(config);
+        break;
+      case 'kokoro':
+        this.#providerService = new KokoroService(config);
+        break;
+      default:
+        throw new Error(
+          `Unsupported text-to-speech provider: ${config.provider}`,
+        );
+    }
   }
 
   async generate(content: string, voice: string, outputPath: string) {
-    const response = await fetch(`${this.#config.href}/v1/audio/speech`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        download_format: 'mp3',
-        input: content,
-        response_format: 'mp3',
-        return_download_link: true,
-        speed: 1,
-        stream: true,
-        voice,
-      }),
-    });
-
-    const fileStream = createWriteStream(outputPath);
-    await pipeline(response.body, fileStream);
+    await this.#providerService.generate(content, voice, outputPath);
   }
 
   async isAvailable() {
-    try {
-      const response = await fetch(`${this.#config.href}/health`);
-      return response.ok;
-    } catch {
-      return false;
-    }
+    return this.#providerService.isAvailable();
   }
 }
