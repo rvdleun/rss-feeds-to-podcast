@@ -1,5 +1,10 @@
 export type ScriptItemType = 'delay' | 'host-speaks' | 'sfx';
 
+export interface EvaluateArticleResponseFormat {
+  isValid?: boolean;
+  reason?: string;
+}
+
 export interface ScriptItem {
   type: ScriptItemType;
 }

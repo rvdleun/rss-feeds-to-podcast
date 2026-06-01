@@ -105,6 +105,39 @@ Return ONLY valid JSON in this exact structure:
 Generate the complete conversation now.`;
 };
 
+export const generateSegmentScriptValidationPrompt = (
+  lines: string[],
+) => {
+  return `
+  You are validating an entire segment of a podcast conversation. Your task is to validate if the lines follows these requirements:
+
+  * Focus stricly on a single topic
+  * Has a proper ending, leaving the conversation on a natural note
+  * There is no "thanks for listening" language
+
+  Here are the lines of the segment:
+  ${lines.map((line) => `- ${line}\n`).join('')}
+
+  Return only this JSON format: {"isValid": true/false, "reason": "brief explanation"}
+  `;
+};
+
+export const generateSegmentScriptStartValidationPrompt = (segmentStart: string) => {
+  return `
+  You are validating the start of a segment of a podcast conversation. Your task is to validate if the opening sentences of a podcast follows these requirements:
+
+  * Introduces the topic of the segment in an engaging way
+  * References the source of the article
+  * Does not welcome anyone to the show
+
+  Here is the start of the segment:
+
+  ${segmentStart}
+
+  Return only this JSON format: {"isValid": true/false, "reason": "brief explanation"}
+  `;
+}
+
 export const generateOutroScriptPrompt = (
   briefs: string[],
   { behaviour, hosts, name }: PodcastConfig,

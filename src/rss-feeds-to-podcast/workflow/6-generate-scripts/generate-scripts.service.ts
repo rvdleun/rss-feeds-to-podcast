@@ -7,11 +7,14 @@ import {
   generateIntroScriptPrompt,
   generateOutroScriptPrompt,
   generateSegmentScriptPrompt,
+  generateSegmentScriptStartValidationPrompt,
+  generateSegmentScriptValidationPrompt,
 } from './generate-scripts.prompts';
 import { z } from 'zod';
 import { generateSegmentDescription } from '../../utils/segment';
 import { DIVIDER } from '../../utils/console';
 import {
+  EvaluateArticleResponseFormat,
   ScriptDelayItem,
   ScriptHostSpeaksItem,
   ScriptItem,
@@ -122,6 +125,7 @@ export class GenerateScriptsService {
     const segments =
       this.outputService.getDataFromDirectory<Segment>('segments');
 
+    let attempts = 0;
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
       this.#logger.log(
@@ -134,6 +138,50 @@ export class GenerateScriptsService {
 
       if (!segment.script) {
         this.#logger.warn(`Script could not be generated`);
+        continue;
+      }
+
+      const firstLine = segment.script[0].content;
+
+      this.#logger.log(`Validating first line: ${firstLine}`);
+
+      const validateStart =
+        await this.llmService.generateText<EvaluateArticleResponseFormat>(
+          generateSegmentScriptStartValidationPrompt(firstLine), z.object({
+            isValid: z.boolean(),
+            reason: z.string(),
+          }),
+        );
+
+      if (!validateStart.isValid) {
+        this.#logger.warn(`First line validation failed: ${validateStart.reason}`);
+
+        attempts++;
+        if (attempts < 5) {
+          i--;
+        }
+        continue;
+      }
+
+      this.#logger.log(`First line validation passed.`);
+
+      this.#logger.log(`Validating entire script.`);
+      const validateScript =
+        await this.llmService.generateText<EvaluateArticleResponseFormat>(
+          generateSegmentScriptValidationPrompt(segment.script.map(line => line.content)),
+          z.object({
+            isValid: z.boolean(),
+            reason: z.string(),
+          }),
+        );
+
+      if (!validateScript.isValid) {
+        this.#logger.warn(`Validation failed: ${validateScript.reason}`);
+
+        attempts++;
+        if (attempts < 5) {
+          i--;
+        }
         continue;
       }
 
