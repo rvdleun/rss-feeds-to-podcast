@@ -19,6 +19,7 @@ import {
   ScriptHostSpeaksItem,
   ScriptItem,
   ScriptSfxItem,
+  ScriptStartSegmentItem,
 } from './generate-scripts.types';
 import { PodcastConfig } from '../../modules/config/schemas/podcast.schema';
 
@@ -70,7 +71,13 @@ export class GenerateScriptsService {
       this.outputService.getDataFromDirectory<Segment>('segments');
     script.push(
       ...segments
-        .map(({ script }) => [
+        .map(({ script, item: { src, title }, siteName }) => [
+          {
+            type: 'start-segment',
+            origin: siteName,
+            src,
+            title,
+          } as ScriptStartSegmentItem,
           ...this.#segmentScriptItem(script),
           {
             type: 'sfx',
@@ -93,6 +100,10 @@ export class GenerateScriptsService {
       type: 'sfx',
       src: 'jingle',
     } as ScriptSfxItem);
+
+    script.forEach((item, index) => {
+      item.id = index;
+    });
 
     this.outputService.generateFile(
       '',

@@ -1,6 +1,5 @@
 import { Command, CommandRunner } from 'nest-commander';
 import { SetupWebAssetsService } from './setup-web-assets.service';
-import { AppConfigService } from '../../modules/config/config.service';
 
 @Command({
   name: 'setup-web-assets',

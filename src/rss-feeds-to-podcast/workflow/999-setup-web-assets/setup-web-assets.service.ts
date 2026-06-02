@@ -7,6 +7,10 @@ import { generateDescriptionPrompt } from './setup-web-assets.prompts';
 import { randomBytes } from 'crypto';
 import { copyFileSync } from 'fs';
 import { join } from 'path';
+import {
+  ScriptItem,
+  ScriptStartSegmentItem,
+} from '../6-generate-scripts/generate-scripts.types';
 
 const webPath = join(process.cwd(), 'web');
 
@@ -33,15 +37,30 @@ export class SetupWebAssetsService {
       generateDescriptionPrompt(podcastConfig, segments),
     );
 
+    const script = this.outputService.getContent<ScriptItem[]>('', 'script.json');
+    const dataSegments = [];
+    let startTime = 0;
+
+    for(let i = 0; i < script.length; i++) {
+      const item = script[i];
+      if (item.type === 'start-segment') {
+        const { origin, src, title } = item as ScriptStartSegmentItem;
+        dataSegments.push({
+          origin,
+          src,
+          startTime,
+          title,
+        });
+      } else {
+        startTime += item.lengthAudio ?? 0;
+      }
+    }
+
     const data = {
       id: randomBytes(3).toString('hex'),
       name: podcastConfig.name,
       description,
-      segments: segments.map((segment) => ({
-        origin: segment.siteName ?? segment.origin,
-        src: segment.item.src,
-        title: segment.item.title,
-      })),
+      segments: dataSegments,
     };
     this.outputService.generateFile(
       '',
